@@ -1,0 +1,14 @@
+services:
+  agentplatform:
+    build: .
+    container_name: agentplatform
+    ports:
+      - "4000:3000"
+    volumes:
+      # Persist instance config across rebuilds
+      - ./instances.json:/app/instances.json
+      # Docker socket access for container monitoring
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

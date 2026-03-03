@@ -1,0 +1,45 @@
+{
+  "name": "@thinkpilot/agentplatform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenClaw Agent Platform — multi-instance control plane for OpenClaw agents",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "sync": "tsx scripts/sync-openclaw.ts",
+    "prebuild": "tsx scripts/sync-openclaw.ts",
+    "rebuild": "./scripts/rebuild.sh",
+    "rebuild:no-deploy": "./scripts/rebuild.sh --no-deploy",
+    "rebuild:sync-only": "./scripts/rebuild.sh --sync-only"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@tanstack/react-query": "^5.90.21",
+    "@xyflow/react": "^12.10.1",
+    "clsx": "^2.1.1",
+    "dockerode": "^4.0.9",
+    "lucide-react": "^0.576.0",
+    "next": "^16.1.6",
+    "postcss": "^8.5.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.1",
+    "uuid": "^13.0.0",
+    "ws": "^8.19.0",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^4.0.1",
+    "@types/node": "^25.3.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
