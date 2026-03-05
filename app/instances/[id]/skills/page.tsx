@@ -4,7 +4,8 @@ import { useParams } from 'next/navigation'
 import { Header } from '@/components/dashboard/header'
 import { SkillBrowser } from '@/components/skills/skill-browser'
 import { useRpc } from '@/hooks/use-rpc'
-import { Loader2 } from 'lucide-react'
+import { AnimatedPage, AnimatedSection } from '@/components/ui/animated-page'
+import { SkeletonCard } from '@/components/ui/skeleton'
 import type { SkillInfo } from '@/core/types'
 
 export default function SkillsPage() {
@@ -21,15 +22,21 @@ export default function SkillsPage() {
   return (
     <>
       <Header title="Skills" description="Browse and manage installed skills" />
-      <div className="p-6">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-[var(--muted-foreground)]" />
-          </div>
-        ) : (
-          <SkillBrowser instanceId={id} skills={skills} />
-        )}
-      </div>
+      <AnimatedPage>
+        <div className="p-6">
+          <AnimatedSection>
+            {isLoading ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
+            ) : (
+              <SkillBrowser instanceId={id} skills={skills} />
+            )}
+          </AnimatedSection>
+        </div>
+      </AnimatedPage>
     </>
   )
 }

@@ -25,6 +25,7 @@ import type {
   ToolInfo,
 } from './types'
 import { createLogger } from './logger'
+import { signChallenge, getDeviceToken, saveDeviceToken } from './device-identity'
 
 const log = createLogger('ws-client')
 
@@ -193,12 +194,14 @@ export class OpenClawClient {
   }
 
   private handleFrame(frame: GatewayFrame) {
-    if (frame.type === 'event') {
+    // hello-ok may arrive as its own frame type or embedded in a res frame
+    const rawType = (frame as unknown as Record<string, unknown>).type as string
+    if (rawType === 'hello-ok') {
+      this.handleHelloOk(frame as unknown as HelloOk)
+    } else if (frame.type === 'event') {
       this.handleEvent(frame as EventFrame)
     } else if (frame.type === 'res') {
       this.handleResponse(frame as ResponseFrame)
-    } else if ((frame as unknown as HelloOk).type === ('hello-ok' as string)) {
-      this.handleHelloOk(frame as unknown as HelloOk)
     }
   }
 
@@ -219,8 +222,19 @@ export class OpenClawClient {
   }
 
   private handleResponse(res: ResponseFrame) {
+    // The connect response wraps hello-ok in payload
+    const payload = res.payload as Record<string, unknown> | undefined
+    if (res.ok && payload?.type === 'hello-ok' && !this._connected) {
+      log.debug('Connect response contains hello-ok payload')
+      this.handleHelloOk(payload as unknown as HelloOk)
+      return
+    }
+
     const pending = this.pending.get(res.id)
-    if (!pending) return
+    if (!pending) {
+      log.debug({ id: res.id, ok: res.ok }, 'Response for unknown request (ignored)')
+      return
+    }
 
     clearTimeout(pending.timer)
     this.pending.delete(res.id)
@@ -243,9 +257,21 @@ export class OpenClawClient {
         serverVersion: hello.server.version,
         connId: hello.server.connId,
         methods: hello.features.methods?.length,
+        hasDeviceToken: !!hello.auth?.deviceToken,
       },
       'Handshake complete (hello-ok)',
     )
+
+    // Persist device token for future reconnections
+    if (hello.auth?.deviceToken) {
+      saveDeviceToken(this.url, {
+        deviceToken: hello.auth.deviceToken,
+        role: hello.auth.role ?? 'operator',
+        scopes: hello.auth.scopes ?? [],
+        issuedAtMs: hello.auth.issuedAtMs,
+      })
+    }
+
     this.helloOk = hello
     this._connected = true
     this.reconnectDelay = RECONNECT_MIN
@@ -256,19 +282,53 @@ export class OpenClawClient {
   }
 
   private sendConnect(challenge: { nonce: string }) {
+    const role = 'operator'
+    const scopes = ['operator.admin']
+    const clientId = 'gateway-client'
+    const clientMode = 'backend'
+
+    // Build auth — include saved device token if we have one
+    const savedToken = getDeviceToken(this.url)
+    const auth: ConnectParams['auth'] = {}
+    if (this.token) auth.token = this.token
+    if (savedToken) auth.deviceToken = savedToken
+    const hasAuth = Object.keys(auth).length > 0
+
+    // Operator + gateway token can skip device identity entirely.
+    // Only use device identity when no shared auth is available
+    // (device identity via Docker bridge isn't recognized as local).
+    const useDeviceIdentity = !this.token
+    const device = useDeviceIdentity
+      ? signChallenge({
+          nonce: challenge.nonce,
+          clientId,
+          clientMode,
+          role,
+          scopes,
+          token: auth.token ?? auth.deviceToken ?? null,
+          platform: process.platform,
+        })
+      : undefined
+
+    log.info(
+      { hasToken: !!this.token, hasDeviceToken: !!savedToken, useDeviceIdentity },
+      'Sending connect',
+    )
+
     const params: ConnectParams = {
       minProtocol: PROTOCOL_VERSION,
       maxProtocol: PROTOCOL_VERSION,
       client: {
-        id: 'gateway-client',
+        id: clientId,
         displayName: 'AgentPlatform',
         version: SYNCED_FROM_VERSION,
         platform: process.platform,
-        mode: 'backend',
+        mode: clientMode,
       },
-      role: 'operator',
-      scopes: ['operator.admin'],
-      ...(this.token ? { auth: { token: this.token } } : {}),
+      role,
+      scopes,
+      ...(device ? { device } : {}),
+      ...(hasAuth ? { auth } : {}),
     }
 
     this.send({

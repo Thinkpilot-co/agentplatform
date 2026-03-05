@@ -24,15 +24,30 @@ function ConnectionEdgeComponent({
   })
 
   return (
-    <BaseEdge
-      path={edgePath}
-      markerEnd={markerEnd}
-      style={{
-        stroke: 'var(--primary)',
-        strokeWidth: 2,
-        ...style,
-      }}
-    />
+    <>
+      <defs>
+        <linearGradient
+          id="edge-gradient"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="0%"
+        >
+          <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="var(--primary)" stopOpacity="1" />
+        </linearGradient>
+      </defs>
+      <BaseEdge
+        path={edgePath}
+        markerEnd={markerEnd}
+        style={{
+          stroke: 'url(#edge-gradient)',
+          strokeWidth: 2,
+          strokeDasharray: '6 3',
+          ...style,
+        }}
+      />
+    </>
   )
 }
 

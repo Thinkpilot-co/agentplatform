@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/dashboard/header'
 import { LogViewer } from '@/components/monitoring/log-viewer'
+import { AnimatedPage, AnimatedSection } from '@/components/ui/animated-page'
 
 export default function LogsPage() {
   const { id } = useParams<{ id: string }>()
@@ -10,9 +11,13 @@ export default function LogsPage() {
   return (
     <>
       <Header title="Logs" description="Real-time application logs" />
-      <div className="p-6">
-        <LogViewer instanceId={id} />
-      </div>
+      <AnimatedPage>
+        <div className="p-6">
+          <AnimatedSection>
+            <LogViewer instanceId={id} />
+          </AnimatedSection>
+        </div>
+      </AnimatedPage>
     </>
   )
 }

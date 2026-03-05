@@ -1,6 +1,7 @@
 'use client'
 
 import { ContainerCard } from './container-card'
+import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-list'
 import type { DockerContainerInfo } from '@/core/types'
 
 export function DockerContainerList({
@@ -17,10 +18,12 @@ export function DockerContainerList({
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <AnimatedList className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {containers.map((c) => (
-        <ContainerCard key={c.id} container={c} />
+        <AnimatedListItem key={c.id}>
+          <ContainerCard container={c} />
+        </AnimatedListItem>
       ))}
-    </div>
+    </AnimatedList>
   )
 }

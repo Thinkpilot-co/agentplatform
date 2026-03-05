@@ -92,6 +92,21 @@ export async function getContainer(
   }
 }
 
+export async function getContainerEnvVar(
+  id: string,
+  varName: string,
+): Promise<string | null> {
+  try {
+    const info = await getContainer(id)
+    if (!info) return null
+    const env = info.Config.Env || []
+    const entry = env.find((e: string) => e.startsWith(`${varName}=`))
+    return entry ? entry.slice(varName.length + 1) : null
+  } catch {
+    return null
+  }
+}
+
 export async function startContainer(id: string): Promise<void> {
   const d = getDocker()
   await d.getContainer(id).start()

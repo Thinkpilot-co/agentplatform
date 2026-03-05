@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { SkillCard } from './skill-card'
+import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-list'
 import { useRpcMutation } from '@/hooks/use-rpc'
 import { Puzzle } from 'lucide-react'
 import type { SkillInfo } from '@/core/types'
@@ -56,12 +57,12 @@ export function SkillBrowser({
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search skills..."
-          className="flex-1 rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
+          className="flex-1 rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
         />
         {categories.length > 0 && (
           <select
             onChange={(e) => setFilter(e.target.value)}
-            className="rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none"
+            className="rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
           >
             <option value="">All categories</option>
             {categories.map((c) => (
@@ -73,16 +74,17 @@ export function SkillBrowser({
         )}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <AnimatedList className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((skill) => (
-          <SkillCard
-            key={skill.id}
-            skill={skill}
-            onToggle={handleToggle}
-            isToggling={configPatch.isPending}
-          />
+          <AnimatedListItem key={skill.id}>
+            <SkillCard
+              skill={skill}
+              onToggle={handleToggle}
+              isToggling={configPatch.isPending}
+            />
+          </AnimatedListItem>
         ))}
-      </div>
+      </AnimatedList>
     </div>
   )
 }

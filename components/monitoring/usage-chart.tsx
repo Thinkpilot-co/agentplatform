@@ -1,7 +1,9 @@
 'use client'
 
 import { useRpc } from '@/hooks/use-rpc'
-import { Loader2, BarChart3 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { SkeletonStat } from '@/components/ui/skeleton'
+import { BarChart3 } from 'lucide-react'
 
 export function UsageChart({ instanceId }: { instanceId: string }) {
   const { data: usageData, isLoading: usageLoading } = useRpc<
@@ -16,8 +18,10 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
 
   if (usageLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <SkeletonStat />
+        <SkeletonStat />
+        <SkeletonStat />
       </div>
     )
   }
@@ -43,14 +47,17 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
         <UsageStat
           label="Input Tokens"
           value={formatNumber(usage.inputTokens as number)}
+          delay={0}
         />
         <UsageStat
           label="Output Tokens"
           value={formatNumber(usage.outputTokens as number)}
+          delay={0.04}
         />
         <UsageStat
           label="Total Tokens"
           value={formatNumber(usage.totalTokens as number)}
+          delay={0.08}
         />
       </div>
 
@@ -60,9 +67,10 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
           <UsageStat
             label="Estimated Cost"
             value={`$${((cost.totalCost as number) ?? 0).toFixed(4)}`}
+            delay={0.12}
           />
           {typeof cost.period === 'string' && (
-            <UsageStat label="Period" value={cost.period} />
+            <UsageStat label="Period" value={cost.period} delay={0.16} />
           )}
         </div>
       )}
@@ -80,17 +88,32 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
   )
 }
 
-function UsageStat({ label, value }: { label: string; value: string }) {
+function UsageStat({
+  label,
+  value,
+  delay = 0,
+}: {
+  label: string
+  value: string
+  delay?: number
+}) {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.3 }}
+      className="rounded-lg border border-[var(--border)] glass p-4 transition-all hover:border-[var(--border-hover)] hover:shadow-[0_0_20px_-5px_var(--primary-glow)]"
+    >
       <p className="text-xs text-[var(--muted-foreground)]">{label}</p>
-      <p className="mt-1 text-xl font-semibold">{value ?? '—'}</p>
-    </div>
+      <p className="mt-1 text-xl font-semibold tabular-nums">
+        {value ?? '\u2014'}
+      </p>
+    </motion.div>
   )
 }
 
 function formatNumber(n: number | undefined): string {
-  if (n === undefined || n === null) return '—'
+  if (n === undefined || n === null) return '\u2014'
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
   return n.toString()

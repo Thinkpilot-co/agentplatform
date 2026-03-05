@@ -22,6 +22,7 @@
     "@xyflow/react": "^12.10.1",
     "clsx": "^2.1.1",
     "dockerode": "^4.0.9",
+    "framer-motion": "^11.18.2",
     "lucide-react": "^0.576.0",
     "next": "^16.1.6",
     "pino": "^10.3.1",

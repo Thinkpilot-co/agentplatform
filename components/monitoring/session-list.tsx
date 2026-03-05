@@ -1,7 +1,9 @@
 'use client'
 
 import { useRpc } from '@/hooks/use-rpc'
-import { MessageSquare, Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { SkeletonTable } from '@/components/ui/skeleton'
+import { MessageSquare } from 'lucide-react'
 import { timeAgo } from '@/lib/utils'
 import type { SessionInfo } from '@/core/types'
 
@@ -16,11 +18,7 @@ export function SessionList({ instanceId }: { instanceId: string }) {
   const sessions = data?.sessions ?? []
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
-      </div>
-    )
+    return <SkeletonTable rows={5} cols={6} />
   }
 
   if (sessions.length === 0) {
@@ -48,9 +46,12 @@ export function SessionList({ instanceId }: { instanceId: string }) {
           </tr>
         </thead>
         <tbody>
-          {sessions.map((session) => (
-            <tr
+          {sessions.map((session, i) => (
+            <motion.tr
               key={session.id}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04, duration: 0.25 }}
               className="border-b border-[var(--border)] last:border-0"
             >
               <td className="px-4 py-2 font-mono text-xs">
@@ -58,18 +59,18 @@ export function SessionList({ instanceId }: { instanceId: string }) {
               </td>
               <td className="px-4 py-2 text-xs">{session.agentKey}</td>
               <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
-                {session.channelId ?? '—'}
+                {session.channelId ?? '\u2014'}
               </td>
-              <td className="px-4 py-2 text-xs">
-                {session.messageCount ?? '—'}
+              <td className="px-4 py-2 text-xs tabular-nums">
+                {session.messageCount ?? '\u2014'}
               </td>
               <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
                 {timeAgo(session.updatedAt)}
               </td>
               <td className="max-w-xs truncate px-4 py-2 text-xs text-[var(--muted-foreground)]">
-                {session.preview ?? '—'}
+                {session.preview ?? '\u2014'}
               </td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>

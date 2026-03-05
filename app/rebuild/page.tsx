@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Header } from '@/components/dashboard/header'
+import { AnimatedPage, AnimatedSection } from '@/components/ui/animated-page'
+import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-list'
+import { motion } from 'framer-motion'
 import {
   Hammer,
   Play,
@@ -173,219 +176,266 @@ export default function RebuildPage() {
         description="Sync from OpenClaw source, build Docker image, and redeploy"
       />
 
-      <div className="flex-1 space-y-6 p-6">
-        {/* Pipeline steps */}
-        <div className="flex items-center gap-2">
-          {STEPS.map((step, i) => {
-            const stepIdx = STEPS.indexOf(state.status)
-            const thisIdx = i
-            const isActive = state.status === step
-            const isDone =
-              state.status === 'done' || (stepIdx > thisIdx && state.running)
-            const isError = state.status === 'error' && stepIdx === thisIdx
-            const StepInfo = STEP_LABELS[step]
+      <AnimatedPage>
+        <div className="flex-1 space-y-6 p-6">
+          {/* Pipeline steps */}
+          <AnimatedSection>
+            <div className="flex items-center gap-2">
+              {STEPS.map((step, i) => {
+                const stepIdx = STEPS.indexOf(state.status)
+                const thisIdx = i
+                const isActive = state.status === step
+                const isDone =
+                  state.status === 'done' ||
+                  (stepIdx > thisIdx && state.running)
+                const isError = state.status === 'error' && stepIdx === thisIdx
+                const StepInfo = STEP_LABELS[step]
 
-            return (
-              <div key={step} className="flex items-center gap-2">
-                {i > 0 && (
-                  <div
-                    className={`h-px w-6 ${
-                      isDone
-                        ? 'bg-emerald-500'
-                        : isActive
-                          ? 'bg-[var(--primary)]'
-                          : 'bg-[var(--border)]'
-                    }`}
-                  />
-                )}
-                <div
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
-                    isActive && state.running
-                      ? 'bg-[var(--primary)] text-white'
-                      : isDone
-                        ? 'bg-emerald-500/20 text-emerald-400'
-                        : isError
-                          ? 'bg-red-500/20 text-red-400'
-                          : 'bg-[var(--secondary)] text-[var(--muted-foreground)]'
-                  }`}
-                >
-                  {isActive && state.running ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : isDone ? (
-                    <Check className="h-3 w-3" />
-                  ) : isError ? (
-                    <X className="h-3 w-3" />
-                  ) : (
-                    <StepInfo.icon className="h-3 w-3" />
-                  )}
-                  {StepInfo.label}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Controls */}
-        <div className="flex items-center gap-4">
-          {!state.running ? (
-            <button
-              onClick={handleStart}
-              className="flex items-center gap-2 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-            >
-              <Play className="h-4 w-4" />
-              Start Rebuild
-            </button>
-          ) : (
-            <button
-              onClick={handleCancel}
-              className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-            >
-              <Square className="h-4 w-4" />
-              Cancel
-            </button>
-          )}
-
-          {/* Options toggles */}
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={options.sync}
-              onChange={(e) =>
-                setOptions({ ...options, sync: e.target.checked })
-              }
-              disabled={state.running}
-              className="rounded"
-            />
-            Sync from OpenClaw
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={options.deploy}
-              onChange={(e) =>
-                setOptions({ ...options, deploy: e.target.checked })
-              }
-              disabled={state.running}
-              className="rounded"
-            />
-            Deploy container
-          </label>
-
-          {elapsed && (
-            <span className="ml-auto text-xs text-[var(--muted-foreground)]">
-              {state.finishedAt
-                ? `Completed in ${elapsed}s`
-                : `${elapsed}s elapsed`}
-            </span>
-          )}
-        </div>
-
-        {/* Status summary */}
-        {state.status !== 'idle' && (
-          <div className="grid gap-3 sm:grid-cols-4">
-            <StatusCard
-              label="Status"
-              value={STEP_LABELS[state.status].label}
-              variant={
-                state.status === 'done'
-                  ? 'success'
-                  : state.status === 'error'
-                    ? 'error'
-                    : state.running
-                      ? 'active'
-                      : 'default'
-              }
-            />
-            <StatusCard
-              label="Image Tag"
-              value={state.imageTag ?? '—'}
-              variant="default"
-            />
-            <StatusCard
-              label="Started"
-              value={
-                state.startedAt
-                  ? new Date(state.startedAt).toLocaleTimeString()
-                  : '—'
-              }
-              variant="default"
-            />
-            <StatusCard
-              label="Duration"
-              value={elapsed ? `${elapsed}s` : '—'}
-              variant="default"
-            />
-          </div>
-        )}
-
-        {/* Error banner */}
-        {state.error && (
-          <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-            {state.error}
-          </div>
-        )}
-
-        {/* Build logs */}
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-sm font-medium">Build Output</h3>
-            {logs.length > 0 && (
-              <button
-                onClick={() => setLogs([])}
-                className="flex items-center gap-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-              >
-                <RotateCw className="h-3 w-3" />
-                Clear
-              </button>
-            )}
-          </div>
-
-          <div
-            ref={logsRef}
-            className="h-[400px] overflow-auto rounded-lg border border-[var(--border)] bg-black p-4"
-          >
-            {logs.length === 0 ? (
-              <p className="text-sm text-zinc-600">
-                Click &quot;Start Rebuild&quot; to begin. Build output will
-                appear here.
-              </p>
-            ) : (
-              <pre className="whitespace-pre-wrap font-mono text-xs leading-5 text-zinc-300">
-                {logs.map((line, i) => {
-                  const isStep = line.startsWith('==> Step:')
-                  const isError =
-                    line.startsWith('==> ERROR') ||
-                    line.toLowerCase().includes('error')
-                  const isSuccess =
-                    line.startsWith('==> Rebuild complete') ||
-                    line.includes('Ready at')
-                  const isCmd = line.startsWith('$ ')
-
-                  return (
-                    <div
-                      key={i}
-                      className={
-                        isStep
-                          ? 'font-bold text-[var(--primary)]'
-                          : isError
-                            ? 'text-red-400'
-                            : isSuccess
-                              ? 'text-emerald-400 font-bold'
-                              : isCmd
-                                ? 'text-yellow-400'
-                                : ''
-                      }
+                return (
+                  <div key={step} className="flex items-center gap-2">
+                    {i > 0 && (
+                      <motion.div
+                        className="h-px w-6"
+                        initial={{ scaleX: 0 }}
+                        animate={{
+                          scaleX: isDone || isActive ? 1 : 0,
+                          backgroundColor: isDone
+                            ? 'rgb(34, 197, 94)'
+                            : isActive
+                              ? 'var(--primary)'
+                              : 'var(--border)',
+                        }}
+                        transition={{ duration: 0.3 }}
+                        style={{
+                          originX: 0,
+                          backgroundColor: isDone
+                            ? 'rgb(34, 197, 94)'
+                            : isActive
+                              ? 'var(--primary)'
+                              : 'var(--border)',
+                        }}
+                      />
+                    )}
+                    <motion.div
+                      animate={{
+                        scale: isActive && state.running ? 1.05 : 1,
+                      }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                        isActive && state.running
+                          ? 'bg-[var(--primary)] text-white shadow-[0_0_16px_var(--primary-glow-strong)]'
+                          : isDone
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : isError
+                              ? 'bg-red-500/20 text-red-400'
+                              : 'bg-[var(--secondary)] text-[var(--muted-foreground)]'
+                      }`}
                     >
-                      {line}
-                    </div>
-                  )
-                })}
-              </pre>
-            )}
-          </div>
+                      {isActive && state.running ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : isDone ? (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{
+                            type: 'spring',
+                            stiffness: 500,
+                            damping: 25,
+                          }}
+                        >
+                          <Check className="h-3 w-3" />
+                        </motion.div>
+                      ) : isError ? (
+                        <X className="h-3 w-3" />
+                      ) : (
+                        <StepInfo.icon className="h-3 w-3" />
+                      )}
+                      {StepInfo.label}
+                    </motion.div>
+                  </div>
+                )
+              })}
+            </div>
+          </AnimatedSection>
+
+          {/* Controls */}
+          <AnimatedSection>
+            <div className="flex items-center gap-4">
+              {!state.running ? (
+                <button
+                  onClick={handleStart}
+                  className="flex items-center gap-2 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[var(--primary-hover)] active:scale-[0.97]"
+                >
+                  <Play className="h-4 w-4" />
+                  Start Rebuild
+                </button>
+              ) : (
+                <button
+                  onClick={handleCancel}
+                  className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700 active:scale-[0.97]"
+                >
+                  <Square className="h-4 w-4" />
+                  Cancel
+                </button>
+              )}
+
+              {/* Options toggles */}
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={options.sync}
+                  onChange={(e) =>
+                    setOptions({ ...options, sync: e.target.checked })
+                  }
+                  disabled={state.running}
+                  className="rounded"
+                />
+                Sync from OpenClaw
+              </label>
+
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={options.deploy}
+                  onChange={(e) =>
+                    setOptions({ ...options, deploy: e.target.checked })
+                  }
+                  disabled={state.running}
+                  className="rounded"
+                />
+                Deploy container
+              </label>
+
+              {elapsed && (
+                <span className="ml-auto text-xs text-[var(--muted-foreground)] tabular-nums">
+                  {state.finishedAt
+                    ? `Completed in ${elapsed}s`
+                    : `${elapsed}s elapsed`}
+                </span>
+              )}
+            </div>
+          </AnimatedSection>
+
+          {/* Status summary */}
+          {state.status !== 'idle' && (
+            <AnimatedSection>
+              <AnimatedList className="grid gap-3 sm:grid-cols-4">
+                <AnimatedListItem>
+                  <StatusCard
+                    label="Status"
+                    value={STEP_LABELS[state.status].label}
+                    variant={
+                      state.status === 'done'
+                        ? 'success'
+                        : state.status === 'error'
+                          ? 'error'
+                          : state.running
+                            ? 'active'
+                            : 'default'
+                    }
+                  />
+                </AnimatedListItem>
+                <AnimatedListItem>
+                  <StatusCard
+                    label="Image Tag"
+                    value={state.imageTag ?? '\u2014'}
+                    variant="default"
+                  />
+                </AnimatedListItem>
+                <AnimatedListItem>
+                  <StatusCard
+                    label="Started"
+                    value={
+                      state.startedAt
+                        ? new Date(state.startedAt).toLocaleTimeString()
+                        : '\u2014'
+                    }
+                    variant="default"
+                  />
+                </AnimatedListItem>
+                <AnimatedListItem>
+                  <StatusCard
+                    label="Duration"
+                    value={elapsed ? `${elapsed}s` : '\u2014'}
+                    variant="default"
+                  />
+                </AnimatedListItem>
+              </AnimatedList>
+            </AnimatedSection>
+          )}
+
+          {/* Error banner */}
+          {state.error && (
+            <AnimatedSection>
+              <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                {state.error}
+              </div>
+            </AnimatedSection>
+          )}
+
+          {/* Build logs */}
+          <AnimatedSection>
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-sm font-medium">Build Output</h3>
+                {logs.length > 0 && (
+                  <button
+                    onClick={() => setLogs([])}
+                    className="flex items-center gap-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] active:scale-[0.96] transition-all"
+                  >
+                    <RotateCw className="h-3 w-3" />
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              <div
+                ref={logsRef}
+                className="h-[400px] overflow-auto rounded-lg border border-[var(--border)] glass p-4"
+              >
+                {logs.length === 0 ? (
+                  <p className="text-sm text-zinc-600">
+                    Click &quot;Start Rebuild&quot; to begin. Build output will
+                    appear here.
+                  </p>
+                ) : (
+                  <pre className="whitespace-pre-wrap font-mono text-xs leading-5 text-zinc-300">
+                    {logs.map((line, i) => {
+                      const isStep = line.startsWith('==> Step:')
+                      const isError =
+                        line.startsWith('==> ERROR') ||
+                        line.toLowerCase().includes('error')
+                      const isSuccess =
+                        line.startsWith('==> Rebuild complete') ||
+                        line.includes('Ready at')
+                      const isCmd = line.startsWith('$ ')
+
+                      return (
+                        <div
+                          key={i}
+                          className={
+                            isStep
+                              ? 'font-bold text-[var(--primary)]'
+                              : isError
+                                ? 'text-red-400'
+                                : isSuccess
+                                  ? 'text-emerald-400 font-bold'
+                                  : isCmd
+                                    ? 'text-yellow-400'
+                                    : ''
+                          }
+                        >
+                          {line}
+                        </div>
+                      )
+                    })}
+                  </pre>
+                )}
+              </div>
+            </div>
+          </AnimatedSection>
         </div>
-      </div>
+      </AnimatedPage>
     </>
   )
 }
@@ -409,9 +459,11 @@ function StatusCard({
           : 'border-[var(--border)]'
 
   return (
-    <div className={`rounded-lg border ${borderColor} bg-[var(--card)] p-3`}>
+    <div className={`rounded-lg border ${borderColor} glass p-3`}>
       <p className="text-[10px] text-[var(--muted-foreground)]">{label}</p>
-      <p className="mt-0.5 text-sm font-medium truncate">{value}</p>
+      <p className="mt-0.5 text-sm font-medium truncate tabular-nums">
+        {value}
+      </p>
     </div>
   )
 }

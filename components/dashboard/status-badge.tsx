@@ -17,17 +17,17 @@ type Status =
   | 'unhealthy'
 
 const statusColors: Record<string, string> = {
-  connected: 'bg-emerald-500',
+  connected: 'bg-emerald-500 glow-pulse',
   connecting: 'bg-yellow-500 animate-pulse',
   disconnected: 'bg-zinc-500',
   error: 'bg-red-500',
-  running: 'bg-emerald-500',
+  running: 'bg-emerald-500 glow-pulse',
   exited: 'bg-zinc-500',
   paused: 'bg-yellow-500',
   restarting: 'bg-yellow-500 animate-pulse',
   dead: 'bg-red-500',
   created: 'bg-zinc-500',
-  healthy: 'bg-emerald-500',
+  healthy: 'bg-emerald-500 glow-pulse',
   unhealthy: 'bg-red-500',
 }
 
@@ -52,6 +52,7 @@ export function StatusBadge({
           'h-2 w-2 rounded-full',
           statusColors[status] ?? 'bg-zinc-500',
         )}
+        style={{ color: 'currentColor' }}
       />
       {label ?? status}
     </span>

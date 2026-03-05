@@ -130,14 +130,14 @@ export function TopologyEditor({
         <button
           onClick={handleSave}
           disabled={configPatch.isPending}
-          className="flex items-center gap-1 rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50"
+          className="flex items-center gap-1 rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-[var(--primary-hover)] active:scale-[0.96] disabled:opacity-50"
         >
           <Save className="h-3 w-3" />
           {configPatch.isPending ? 'Saving...' : 'Save Topology'}
         </button>
       </div>
 
-      <div className="h-[600px] rounded-lg border border-[var(--border)] bg-[var(--card)]">
+      <div className="h-[600px] rounded-lg border border-[var(--border)] glass">
         <ReactFlow
           nodes={nodes}
           edges={edges}

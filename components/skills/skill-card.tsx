@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import type { SkillInfo } from '@/core/types'
 import { ToggleSwitch } from '@/components/ui/toggle-switch'
 
@@ -13,7 +14,11 @@ export function SkillCard({
   isToggling: boolean
 }) {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="rounded-lg border border-[var(--border)] glass p-4 transition-all hover:border-[var(--border-hover)] hover:shadow-[0_0_20px_-5px_var(--primary-glow)]"
+    >
       <div className="flex items-start justify-between">
         <div>
           <span className="text-sm font-medium">{skill.name}</span>
@@ -41,6 +46,6 @@ export function SkillCard({
           {skill.category}
         </span>
       )}
-    </div>
+    </motion.div>
   )
 }

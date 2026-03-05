@@ -26,3 +26,6 @@ npm-debug.log*
 
 # instance config (may contain tokens)
 instances.json
+
+# device identity (keypair + tokens)
+.identity/

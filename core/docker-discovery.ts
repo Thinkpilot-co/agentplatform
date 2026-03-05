@@ -1,4 +1,4 @@
-import { listContainers } from './docker-monitor'
+import { listContainers, getContainerEnvVar } from './docker-monitor'
 import { instanceManager } from './instance-manager'
 import { eventBus } from './event-bus'
 import { createLogger } from './logger'
@@ -30,16 +30,20 @@ export async function discoverOpenClawContainers(): Promise<InstanceConfig[]> {
     if (discoveredIds.has(instanceId)) continue
 
     const port = container.gatewayPort ?? 18789
+
+    // Extract gateway token from container environment
+    const token = await getContainerEnvVar(container.id, 'OPENCLAW_GATEWAY_TOKEN')
+
     const config: InstanceConfig = {
       id: instanceId,
       name: `Docker: ${container.name}`,
       url: `ws://127.0.0.1:${port}`,
-      token: null,
+      token: token ?? null,
       tags: ['docker', 'auto-discovered'],
     }
 
     log.info(
-      { instanceId, name: container.name, port, url: config.url },
+      { instanceId, name: container.name, port, url: config.url, hasToken: !!token },
       'Discovered new OpenClaw container',
     )
 

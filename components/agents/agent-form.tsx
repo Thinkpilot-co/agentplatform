@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useCreateAgent, useUpdateAgent } from '@/hooks/use-agents'
 import { ModelSelector } from './model-selector'
+import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import type { AgentInfo } from '@/core/types'
 
@@ -56,7 +57,7 @@ export function AgentForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4"
+      className="rounded-lg border border-[var(--border)] glass p-4"
     >
       <div className="mb-3 flex items-center justify-between">
         <h4 className="text-sm font-medium">
@@ -65,7 +66,7 @@ export function AgentForm({
         <button
           type="button"
           onClick={onClose}
-          className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)]"
+          className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:rotate-90 transition-transform"
         >
           <X className="h-4 w-4" />
         </button>
@@ -81,7 +82,7 @@ export function AgentForm({
             required
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
+            className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
           />
         </div>
 
@@ -95,7 +96,7 @@ export function AgentForm({
               value={form.key}
               onChange={(e) => setForm({ ...form, key: e.target.value })}
               placeholder="auto-generated"
-              className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
+              className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
             />
           </div>
         )}
@@ -109,7 +110,7 @@ export function AgentForm({
             value={form.emoji}
             onChange={(e) => setForm({ ...form, emoji: e.target.value })}
             placeholder="Pick an emoji"
-            className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
+            className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
           />
         </div>
 
@@ -134,26 +135,27 @@ export function AgentForm({
           onChange={(e) => setForm({ ...form, persona: e.target.value })}
           rows={3}
           placeholder="Describe the agent's personality and behavior..."
-          className="w-full resize-none rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
+          className="w-full resize-none rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
         />
       </div>
 
       <div className="mt-3 flex gap-2">
-        <button
+        <motion.button
           type="submit"
           disabled={isPending}
-          className="rounded-md bg-[var(--primary)] px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+          whileTap={{ scale: 0.97 }}
+          className="rounded-md bg-[var(--primary)] px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
         >
           {isPending
             ? 'Saving...'
             : isEditing
               ? 'Update Agent'
               : 'Create Agent'}
-        </button>
+        </motion.button>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-md bg-[var(--secondary)] px-4 py-1.5 text-sm text-[var(--muted-foreground)] hover:bg-[var(--accent)]"
+          className="rounded-md bg-[var(--secondary)] px-4 py-1.5 text-sm text-[var(--muted-foreground)] hover:bg-[var(--accent)] active:scale-[0.97] transition-all"
         >
           Cancel
         </button>

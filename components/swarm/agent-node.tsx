@@ -15,13 +15,20 @@ export interface AgentNodeData {
 
 function AgentNodeComponent({ data }: NodeProps) {
   const nodeData = data as unknown as AgentNodeData
+  const isConnected = nodeData.enabled !== false
 
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 shadow-lg min-w-[140px]">
+    <div
+      className={`rounded-lg border glass p-3 shadow-lg min-w-[140px] transition-all ${
+        isConnected
+          ? 'border-blue-500/30 shadow-[0_0_16px_var(--primary-glow)]'
+          : 'border-[var(--border)]'
+      }`}
+    >
       <Handle
         type="target"
         position={Position.Top}
-        className="!bg-[var(--primary)] !h-2 !w-2 !border-none"
+        className="!bg-[var(--primary)] !h-2 !w-2 !border-none glow-pulse"
       />
 
       <div className="flex items-center gap-2">
@@ -44,7 +51,7 @@ function AgentNodeComponent({ data }: NodeProps) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!bg-[var(--primary)] !h-2 !w-2 !border-none"
+        className="!bg-[var(--primary)] !h-2 !w-2 !border-none glow-pulse"
       />
     </div>
   )

@@ -67,12 +67,20 @@ export interface ConnectParams {
     displayName?: string
     version: string
     platform: string
+    deviceFamily?: string
     mode: string
     instanceId?: string
   }
   caps?: string[]
   role?: string
   scopes?: string[]
+  device?: {
+    id: string
+    publicKey: string
+    signature: string
+    signedAt: number
+    nonce: string
+  }
   auth?: {
     token?: string
     deviceToken?: string

@@ -2,7 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { useRpc, useRpcMutation } from '@/hooks/use-rpc'
-import { Loader2, Save, Code, FormInput, Eye, EyeOff } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Save, Code, FormInput, Eye, EyeOff } from 'lucide-react'
 import type { ConfigSchemaResponse, ConfigUiHint } from '@/core/types'
 import { ToggleSwitch } from '@/components/ui/toggle-switch'
 
@@ -21,8 +23,15 @@ export function SchemaForm({ instanceId }: { instanceId: string }) {
 
   if (schemaLoading || configLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-24" />
+        </div>
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
       </div>
     )
   }
@@ -30,28 +39,38 @@ export function SchemaForm({ instanceId }: { instanceId: string }) {
   return (
     <div className="space-y-4">
       {/* Mode toggle */}
-      <div className="flex gap-2">
+      <div className="relative flex gap-0 rounded-md bg-[var(--secondary)] p-0.5 w-fit">
         <button
           onClick={() => setMode('form')}
-          className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium ${
-            mode === 'form'
-              ? 'bg-[var(--primary)] text-white'
-              : 'bg-[var(--secondary)] text-[var(--muted-foreground)]'
-          }`}
+          className="relative z-10 flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors"
         >
-          <FormInput className="h-3 w-3" />
-          Form View
+          {mode === 'form' && (
+            <motion.div
+              layoutId="config-mode"
+              className="absolute inset-0 rounded-md bg-[var(--primary)]"
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+          )}
+          <FormInput className="relative h-3 w-3" />
+          <span className={`relative ${mode === 'form' ? 'text-white' : ''}`}>
+            Form View
+          </span>
         </button>
         <button
           onClick={() => setMode('json')}
-          className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium ${
-            mode === 'json'
-              ? 'bg-[var(--primary)] text-white'
-              : 'bg-[var(--secondary)] text-[var(--muted-foreground)]'
-          }`}
+          className="relative z-10 flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors"
         >
-          <Code className="h-3 w-3" />
-          JSON Editor
+          {mode === 'json' && (
+            <motion.div
+              layoutId="config-mode"
+              className="absolute inset-0 rounded-md bg-[var(--primary)]"
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+          )}
+          <Code className="relative h-3 w-3" />
+          <span className={`relative ${mode === 'json' ? 'text-white' : ''}`}>
+            JSON Editor
+          </span>
         </button>
       </div>
 
@@ -113,6 +132,8 @@ function FormView({
     }
   }
 
+  const hasUnsavedChanges = Object.keys(edits).length > 0
+
   return (
     <div className="space-y-6">
       {sortedGroups.map(([groupName, keys]) => (
@@ -137,17 +158,22 @@ function FormView({
         </div>
       ))}
 
-      {Object.keys(edits).length > 0 && (
-        <button
+      {hasUnsavedChanges && (
+        <motion.button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-1 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+          whileTap={{ scale: 0.97 }}
+          className={`flex items-center gap-1 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[var(--primary-hover)] disabled:opacity-50 ${
+            hasUnsavedChanges
+              ? 'shadow-[0_0_16px_var(--primary-glow-strong)]'
+              : ''
+          }`}
         >
           <Save className="h-3.5 w-3.5" />
           {isSaving
             ? 'Saving...'
             : `Save ${Object.keys(edits).length} change(s)`}
-        </button>
+        </motion.button>
       )}
     </div>
   )
@@ -202,7 +228,7 @@ function ConfigField({
             }
           }}
           rows={4}
-          className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 font-mono text-xs outline-none focus:border-[var(--primary)]"
+          className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 font-mono text-xs outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
         />
       </div>
     )
@@ -231,7 +257,7 @@ function ConfigField({
             onChange(v)
           }}
           placeholder={hint?.placeholder}
-          className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
+          className="w-full rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
         />
         {isSensitive && (
           <button
@@ -282,20 +308,21 @@ function JsonEditor({
           setError(null)
         }}
         rows={30}
-        className="w-full resize-none rounded-lg border border-[var(--border)] bg-black p-4 font-mono text-xs text-zinc-300 outline-none focus:border-[var(--primary)]"
+        className="w-full resize-none rounded-lg border border-[var(--border)] bg-black p-4 font-mono text-xs text-zinc-300 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
         spellCheck={false}
       />
 
       {error && <p className="text-xs text-red-400">Invalid JSON: {error}</p>}
 
-      <button
+      <motion.button
         onClick={handleSave}
         disabled={isSaving || !!error}
-        className="flex items-center gap-1 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+        whileTap={{ scale: 0.97 }}
+        className="flex items-center gap-1 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
       >
         <Save className="h-3.5 w-3.5" />
         {isSaving ? 'Saving...' : 'Apply Config'}
-      </button>
+      </motion.button>
     </div>
   )
 }

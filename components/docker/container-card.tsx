@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Container } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { StatusBadge } from '@/components/dashboard/status-badge'
 import { ContainerActions } from './container-actions'
 import type { DockerContainerInfo } from '@/core/types'
@@ -12,7 +13,11 @@ export function ContainerCard({
   container: DockerContainerInfo
 }) {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="rounded-lg border border-[var(--border)] glass p-4 transition-all hover:border-[var(--border-hover)] hover:shadow-[0_0_20px_-5px_var(--primary-glow)]"
+    >
       <div className="flex items-start justify-between">
         <Link
           href={`/docker/${container.id}`}
@@ -50,6 +55,6 @@ export function ContainerCard({
       <div className="mt-3">
         <ContainerActions containerId={container.id} state={container.state} />
       </div>
-    </div>
+    </motion.div>
   )
 }
