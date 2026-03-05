@@ -17,8 +17,12 @@ function read(): InstancesFile {
   }
 }
 
+let writePromise = Promise.resolve()
+
 function write(data: InstancesFile) {
-  writeFileSync(CONFIG_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8')
+  writePromise = writePromise.then(() => {
+    writeFileSync(CONFIG_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8')
+  })
 }
 
 export function listInstances(): InstanceConfig[] {

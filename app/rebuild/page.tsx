@@ -63,6 +63,11 @@ export default function RebuildPage() {
         }
       })
       .catch(() => {})
+
+    return () => {
+      eventSourceRef.current?.close()
+      eventSourceRef.current = null
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

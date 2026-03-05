@@ -10,8 +10,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'AgentPlatform — OpenClaw Control Plane',
-  description: 'Multi-instance OpenClaw agent management platform',
+  title: 'Clawhaus — OpenClaw Control Plane',
+  description: 'Clawhaus — multi-instance OpenClaw agent management platform',
 }
 
 export default function RootLayout({

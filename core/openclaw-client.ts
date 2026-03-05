@@ -320,7 +320,7 @@ export class OpenClawClient {
       maxProtocol: PROTOCOL_VERSION,
       client: {
         id: clientId,
-        displayName: 'AgentPlatform',
+        displayName: 'Clawhaus',
         version: SYNCED_FROM_VERSION,
         platform: process.platform,
         mode: clientMode,

@@ -11,16 +11,16 @@ set -euo pipefail
 #
 # Environment:
 #   OPENCLAW_SRC    Path to OpenClaw source (default: ../openclaw)
-#   IMAGE_NAME      Docker image name (default: agentplatform)
-#   CONTAINER_NAME  Docker container name (default: agentplatform)
+#   IMAGE_NAME      Docker image name (default: clawhaus)
+#   CONTAINER_NAME  Docker container name (default: clawhaus)
 #   PORT            Host port mapping (default: 4000)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 OPENCLAW_SRC="${OPENCLAW_SRC:-$(realpath "$PROJECT_DIR/../openclaw" 2>/dev/null || echo "../openclaw")}"
-IMAGE_NAME="${IMAGE_NAME:-agentplatform}"
-CONTAINER_NAME="${CONTAINER_NAME:-agentplatform}"
+IMAGE_NAME="${IMAGE_NAME:-clawhaus}"
+CONTAINER_NAME="${CONTAINER_NAME:-clawhaus}"
 PORT="${PORT:-4000}"
 
 NO_SYNC=false

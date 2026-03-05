@@ -8,10 +8,10 @@ import { timeAgo } from '@/lib/utils'
 import type { SessionInfo } from '@/core/types'
 
 export function SessionList({ instanceId }: { instanceId: string }) {
-  const { data, isLoading } = useRpc<{ sessions: SessionInfo[] }>(
+  const { data, isLoading } = useRpc<{ sessions: SessionInfo[]; count: number; ts: number }>(
     instanceId,
     'sessions.list',
-    { limit: 50 },
+    { limit: 50, includeDerivedTitles: true, includeLastMessage: true },
     { refetchInterval: 15_000 },
   )
 
@@ -38,9 +38,9 @@ export function SessionList({ instanceId }: { instanceId: string }) {
         <thead>
           <tr className="border-b border-[var(--border)] text-left text-xs text-[var(--muted-foreground)]">
             <th className="px-4 py-2">Session</th>
-            <th className="px-4 py-2">Agent</th>
+            <th className="px-4 py-2">Name</th>
             <th className="px-4 py-2">Channel</th>
-            <th className="px-4 py-2">Messages</th>
+            <th className="px-4 py-2">Tokens</th>
             <th className="px-4 py-2">Last Active</th>
             <th className="px-4 py-2">Preview</th>
           </tr>
@@ -48,27 +48,29 @@ export function SessionList({ instanceId }: { instanceId: string }) {
         <tbody>
           {sessions.map((session, i) => (
             <motion.tr
-              key={session.id}
+              key={session.key}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04, duration: 0.25 }}
               className="border-b border-[var(--border)] last:border-0"
             >
               <td className="px-4 py-2 font-mono text-xs">
-                {session.id.slice(0, 8)}
+                {session.key}
               </td>
-              <td className="px-4 py-2 text-xs">{session.agentKey}</td>
+              <td className="px-4 py-2 text-xs">
+                {session.displayName ?? session.label ?? session.key}
+              </td>
               <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
-                {session.channelId ?? '\u2014'}
+                {session.channel ?? '\u2014'}
               </td>
               <td className="px-4 py-2 text-xs tabular-nums">
-                {session.messageCount ?? '\u2014'}
+                {session.totalTokens ?? '\u2014'}
               </td>
               <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
                 {timeAgo(session.updatedAt)}
               </td>
               <td className="max-w-xs truncate px-4 py-2 text-xs text-[var(--muted-foreground)]">
-                {session.preview ?? '\u2014'}
+                {session.derivedTitle ?? session.lastMessagePreview ?? '\u2014'}
               </td>
             </motion.tr>
           ))}

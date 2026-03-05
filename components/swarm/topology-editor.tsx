@@ -67,8 +67,17 @@ export function TopologyEditor({
   instanceId: string
   agents: AgentInfo[]
 }) {
-  const initialNodes = useMemo(() => agentsToNodes(agents), [agents])
-  const initialEdges = useMemo(() => agentsToEdges(agents), [agents])
+  const uniqueAgents = useMemo(() => {
+    const seen = new Set<string>()
+    return agents.filter((a) => {
+      if (seen.has(a.key)) return false
+      seen.add(a.key)
+      return true
+    })
+  }, [agents])
+
+  const initialNodes = useMemo(() => agentsToNodes(uniqueAgents), [uniqueAgents])
+  const initialEdges = useMemo(() => agentsToEdges(uniqueAgents), [uniqueAgents])
 
   const [nodes, , onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
@@ -109,7 +118,7 @@ export function TopologyEditor({
       string,
       { subagents: { allowAgents: string[] } }
     > = {}
-    for (const agent of agents) {
+    for (const agent of uniqueAgents) {
       agentsPatch[agent.key] = {
         subagents: {
           allowAgents: agentSubagents[agent.key] ?? [],
@@ -118,7 +127,7 @@ export function TopologyEditor({
     }
 
     configPatch.mutate({ agents: agentsPatch })
-  }, [edges, agents, configPatch])
+  }, [edges, uniqueAgents, configPatch])
 
   return (
     <div className="flex flex-col gap-3">
@@ -150,9 +159,10 @@ export function TopologyEditor({
           proOptions={{ hideAttribution: true }}
           colorMode="dark"
         >
-          <Background color="var(--border)" gap={20} />
-          <Controls />
+          <Background key="bg" color="var(--border)" gap={20} />
+          <Controls key="controls" />
           <MiniMap
+            key="minimap"
             style={{ background: 'var(--card)' }}
             nodeColor="var(--primary)"
           />

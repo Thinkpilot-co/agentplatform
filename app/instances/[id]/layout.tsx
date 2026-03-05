@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Settings,
   BarChart3,
+  Clock,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -24,6 +25,7 @@ const tabs = [
   { segment: '/swarm', label: 'Swarm', icon: GitBranch },
   { segment: '/logs', label: 'Logs', icon: ScrollText },
   { segment: '/sessions', label: 'Sessions', icon: MessageSquare },
+  { segment: '/cron', label: 'Cron', icon: Clock },
   { segment: '/config', label: 'Config', icon: Settings },
   { segment: '/usage', label: 'Usage', icon: BarChart3 },
 ]

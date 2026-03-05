@@ -163,13 +163,18 @@ export interface ChannelInfo {
 // ── Session types ──
 
 export interface SessionInfo {
-  id: string
-  agentKey: string
-  channelId?: string
-  createdAt: number
-  updatedAt: number
-  messageCount?: number
-  preview?: string
+  key: string
+  kind: 'direct' | 'group' | 'global' | 'unknown'
+  label?: string
+  displayName?: string
+  derivedTitle?: string
+  lastMessagePreview?: string
+  channel?: string
+  updatedAt: number | null
+  sessionId?: string
+  totalTokens?: number
+  model?: string
+  modelProvider?: string
 }
 
 // ── Skill types ──

@@ -1,8 +1,8 @@
 {
-  "name": "@thinkpilot/agentplatform",
+  "name": "@clawhaus/platform",
   "version": "0.1.0",
   "private": true,
-  "description": "OpenClaw Agent Platform — multi-instance control plane for OpenClaw agents",
+  "description": "Clawhaus — multi-instance control plane for OpenClaw agents",
   "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",

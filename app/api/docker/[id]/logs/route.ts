@@ -7,7 +7,7 @@ export async function GET(
 ) {
   const { id } = await params
   const url = new URL(request.url)
-  const tail = parseInt(url.searchParams.get('tail') || '200')
+  const tail = Math.min(parseInt(url.searchParams.get('tail') || '200') || 200, 5000)
 
   try {
     const logs = await getContainerLogs(id, { tail })

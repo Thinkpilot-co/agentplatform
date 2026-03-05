@@ -35,7 +35,9 @@ export function startHealthMonitor() {
 
   timer = setInterval(() => {
     const states = instanceManager.getAllStates()
-    Promise.all(states.map((s) => checkInstance(s.config.id)))
+    Promise.all(states.map((s) => checkInstance(s.config.id))).catch((err) => {
+      log.error({ err }, 'Health monitor batch failed')
+    })
   }, CHECK_INTERVAL)
 }
 

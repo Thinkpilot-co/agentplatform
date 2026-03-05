@@ -1,7 +1,7 @@
 services:
-  agentplatform:
+  clawhaus:
     build: .
-    container_name: agentplatform
+    container_name: clawhaus
     ports:
       - "4000:3000"
     volumes:

@@ -34,8 +34,8 @@ export interface RebuildOptions {
 type LogListener = (line: string) => void
 
 const DEFAULT_OPENCLAW_SRC = path.resolve(process.cwd(), '../openclaw')
-const DEFAULT_IMAGE_NAME = 'agentplatform'
-const DEFAULT_CONTAINER_NAME = 'agentplatform'
+const DEFAULT_IMAGE_NAME = 'clawhaus'
+const DEFAULT_CONTAINER_NAME = 'clawhaus'
 const DEFAULT_PORT = 4000
 
 let currentBuild: BuildState = {
@@ -117,7 +117,12 @@ function runCommand(
 
 export function cancelBuild() {
   if (currentProcess) {
-    currentProcess.kill('SIGTERM')
+    const proc = currentProcess
+    proc.kill('SIGTERM')
+    const killTimer = setTimeout(() => {
+      try { proc.kill('SIGKILL') } catch {}
+    }, 5000)
+    proc.once('exit', () => clearTimeout(killTimer))
     currentProcess = null
   }
   if (currentBuild.running) {

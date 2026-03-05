@@ -1,17 +1,42 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useInstance } from '@/hooks/use-instance'
+import { useRemoveInstance } from '@/hooks/use-instances'
 import { StatusBadge } from '@/components/dashboard/status-badge'
 import { Header } from '@/components/dashboard/header'
 import { AnimatedPage, AnimatedSection } from '@/components/ui/animated-page'
 import { SkeletonStat, SkeletonTable } from '@/components/ui/skeleton'
-import { Users, Radio, Heart, Server } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
+import { Users, Radio, Heart, Server, Trash2, RotateCw } from 'lucide-react'
 import { formatUptime, timeAgo } from '@/lib/utils'
 
 export default function InstanceOverviewPage() {
   const { id } = useParams<{ id: string }>()
+  const router = useRouter()
   const { data, isLoading } = useInstance(id)
+  const removeInstance = useRemoveInstance()
+  const { toast } = useToast()
+
+  const handleDelete = () => {
+    if (!confirm(`Delete instance "${data?.name ?? id}"? This cannot be undone.`)) return
+    removeInstance.mutate(id, {
+      onSuccess: () => {
+        toast('Instance deleted', 'success')
+        router.push('/')
+      },
+      onError: (err) => toast(err.message, 'error'),
+    })
+  }
+
+  const handleRetry = async () => {
+    try {
+      await fetch(`/api/instances/${id}/reconnect`, { method: 'POST' })
+      toast('Reconnecting...', 'info')
+    } catch {
+      toast('Failed to trigger reconnect', 'error')
+    }
+  }
 
   if (isLoading || !data) {
     return (
@@ -207,6 +232,32 @@ export default function InstanceOverviewPage() {
                   )}
                   {data.error && <InfoRow label="Error" value={data.error} />}
                 </div>
+              </div>
+            </section>
+          </AnimatedSection>
+
+          {/* Instance actions */}
+          <AnimatedSection>
+            <section>
+              <h3 className="mb-2 text-sm font-medium">Actions</h3>
+              <div className="flex items-center gap-3">
+                {(data.status === 'disconnected' || data.status === 'error') && (
+                  <button
+                    onClick={handleRetry}
+                    className="flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-medium transition-all hover:bg-[var(--secondary)] active:scale-[0.97]"
+                  >
+                    <RotateCw className="h-3.5 w-3.5" />
+                    Retry Connection
+                  </button>
+                )}
+                <button
+                  onClick={handleDelete}
+                  disabled={removeInstance.isPending}
+                  className="flex items-center gap-2 rounded-md border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 transition-all hover:bg-red-500/10 active:scale-[0.97] disabled:opacity-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {removeInstance.isPending ? 'Deleting...' : 'Delete Instance'}
+                </button>
               </div>
             </section>
           </AnimatedSection>

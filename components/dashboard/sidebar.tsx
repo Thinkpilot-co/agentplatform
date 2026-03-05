@@ -21,9 +21,9 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-14 items-center gap-2 border-b border-[var(--glass-border)] px-4">
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--primary)] text-xs font-bold text-white shadow-[0_0_12px_var(--primary-glow)]">
-          OC
+          CH
         </div>
-        <span className="text-sm font-semibold tracking-tight">AgentPlatform</span>
+        <span className="text-sm font-semibold tracking-tight">Clawhaus</span>
       </div>
 
       {/* Nav */}
