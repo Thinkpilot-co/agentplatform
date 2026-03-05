@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { TopologyEditor } from "@/components/swarm/topology-editor";
-import { useAgents } from "@/hooks/use-agents";
-import { Loader2, GitBranch } from "lucide-react";
+import { useParams } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { TopologyEditor } from '@/components/swarm/topology-editor'
+import { useAgents } from '@/hooks/use-agents'
+import { Loader2, GitBranch } from 'lucide-react'
 
 export default function SwarmPage() {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = useAgents(id);
+  const { id } = useParams<{ id: string }>()
+  const { data, isLoading } = useAgents(id)
 
-  const agents = data?.agents ?? [];
+  const agents = data?.agents ?? []
 
   return (
     <>
@@ -35,5 +35,5 @@ export default function SwarmPage() {
         )}
       </div>
     </>
-  );
+  )
 }

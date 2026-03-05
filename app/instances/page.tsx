@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import { Header } from "@/components/dashboard/header";
-import { InstanceCard } from "@/components/dashboard/instance-card";
-import { useInstances } from "@/hooks/use-instances";
-import { Loader2, Server } from "lucide-react";
-import Link from "next/link";
+import { Header } from '@/components/dashboard/header'
+import { InstanceCard } from '@/components/dashboard/instance-card'
+import { useInstances } from '@/hooks/use-instances'
+import { Loader2, Server } from 'lucide-react'
+import Link from 'next/link'
 
 export default function InstancesPage() {
-  const { data, isLoading } = useInstances();
-  const instances = data?.instances ?? [];
+  const { data, isLoading } = useInstances()
+  const instances = data?.instances ?? []
 
   return (
     <>
@@ -39,22 +39,22 @@ export default function InstancesPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {instances.map(
               (inst: {
-                id: string;
-                name: string;
-                url: string;
-                status: "connected" | "connecting" | "disconnected" | "error";
-                tags: string[];
-                agentCount: number;
-                serverVersion?: string;
-                health?: { ok: boolean };
-                lastConnected?: number;
+                id: string
+                name: string
+                url: string
+                status: 'connected' | 'connecting' | 'disconnected' | 'error'
+                tags: string[]
+                agentCount: number
+                serverVersion?: string
+                health?: { ok: boolean }
+                lastConnected?: number
               }) => (
                 <InstanceCard key={inst.id} {...inst} />
-              )
+              ),
             )}
           </div>
         )}
       </div>
     </>
-  );
+  )
 }

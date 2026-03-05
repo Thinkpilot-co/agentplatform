@@ -1,25 +1,25 @@
-"use client";
+'use client'
 
-import { useRpc } from "@/hooks/use-rpc";
-import type { ModelInfo } from "@/core/types";
+import { useRpc } from '@/hooks/use-rpc'
+import type { ModelInfo } from '@/core/types'
 
 export function ModelSelector({
   instanceId,
   value,
   onChange,
 }: {
-  instanceId: string;
-  value: string;
-  onChange: (model: string) => void;
+  instanceId: string
+  value: string
+  onChange: (model: string) => void
 }) {
   const { data } = useRpc<{ models: ModelInfo[] }>(
     instanceId,
-    "models.list",
+    'models.list',
     undefined,
-    { refetchInterval: 60_000 }
-  );
+    { refetchInterval: 60_000 },
+  )
 
-  const models = data?.models ?? [];
+  const models = data?.models ?? []
 
   return (
     <select
@@ -31,7 +31,7 @@ export function ModelSelector({
       {models.map((m) => (
         <option key={m.id} value={m.id}>
           {m.name || m.id}
-          {m.provider ? ` (${m.provider})` : ""}
+          {m.provider ? ` (${m.provider})` : ''}
         </option>
       ))}
       {/* Allow custom model input */}
@@ -39,5 +39,5 @@ export function ModelSelector({
         <option value={value}>{value}</option>
       )}
     </select>
-  );
+  )
 }

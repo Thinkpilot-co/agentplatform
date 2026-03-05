@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { UsageChart } from "@/components/monitoring/usage-chart";
+import { useParams } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { UsageChart } from '@/components/monitoring/usage-chart'
 
 export default function UsagePage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>()
 
   return (
     <>
@@ -14,5 +14,5 @@ export default function UsagePage() {
         <UsageChart instanceId={id} />
       </div>
     </>
-  );
+  )
 }

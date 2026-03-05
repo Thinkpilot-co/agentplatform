@@ -1,31 +1,31 @@
-import { NextResponse } from "next/server";
-import { initPlatform } from "@/core/init";
-import { instanceManager } from "@/core/instance-manager";
-import * as store from "@/core/instance-store";
+import { NextResponse } from 'next/server'
+import { initPlatform } from '@/core/init'
+import { instanceManager } from '@/core/instance-manager'
+import * as store from '@/core/instance-store'
 
-initPlatform();
+initPlatform()
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-  const state = instanceManager.getState(id);
+  const { id } = await params
+  const state = instanceManager.getState(id)
 
   if (!state) {
-    return NextResponse.json({ error: "Instance not found" }, { status: 404 });
+    return NextResponse.json({ error: 'Instance not found' }, { status: 404 })
   }
 
   // If connected, fetch fresh agent & channel data
-  const client = instanceManager.getClient(id);
+  const client = instanceManager.getClient(id)
   if (client?.connected) {
     try {
       const [agents, channels] = await Promise.all([
         client.agentsList().catch(() => state.agents),
         client.channelsStatus().catch(() => state.channels),
-      ]);
-      state.agents = agents;
-      state.channels = channels;
+      ])
+      state.agents = agents
+      state.channels = channels
     } catch {
       // Use cached data
     }
@@ -45,17 +45,17 @@ export async function GET(
     availableMethods: state.availableMethods,
     lastConnected: state.lastConnected,
     lastHealthCheck: state.lastHealthCheck,
-  });
+  })
 }
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  const { id } = await params
 
-  instanceManager.removeInstance(id);
-  store.removeInstance(id);
+  instanceManager.removeInstance(id)
+  store.removeInstance(id)
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true })
 }

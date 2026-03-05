@@ -1,40 +1,40 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { SkillCard } from "./skill-card";
-import { useRpcMutation } from "@/hooks/use-rpc";
-import { Puzzle } from "lucide-react";
-import type { SkillInfo } from "@/core/types";
+import { useState } from 'react'
+import { SkillCard } from './skill-card'
+import { useRpcMutation } from '@/hooks/use-rpc'
+import { Puzzle } from 'lucide-react'
+import type { SkillInfo } from '@/core/types'
 
 export function SkillBrowser({
   instanceId,
   skills,
 }: {
-  instanceId: string;
-  skills: SkillInfo[];
+  instanceId: string
+  skills: SkillInfo[]
 }) {
-  const [filter, setFilter] = useState("");
-  const configPatch = useRpcMutation(instanceId, "config.patch", {
-    invalidateKeys: [["rpc", instanceId, "skills.status"]],
-  });
+  const [filter, setFilter] = useState('')
+  const configPatch = useRpcMutation(instanceId, 'config.patch', {
+    invalidateKeys: [['rpc', instanceId, 'skills.status']],
+  })
 
   const filtered = skills.filter(
     (s) =>
       !filter ||
       s.name.toLowerCase().includes(filter.toLowerCase()) ||
-      s.category?.toLowerCase().includes(filter.toLowerCase())
-  );
+      s.category?.toLowerCase().includes(filter.toLowerCase()),
+  )
 
   const categories = Array.from(
-    new Set(skills.map((s) => s.category).filter(Boolean))
-  ) as string[];
+    new Set(skills.map((s) => s.category).filter(Boolean)),
+  ) as string[]
 
   const handleToggle = (skillId: string, enabled: boolean) => {
     // Toggle skill via config.patch
     configPatch.mutate({
       skills: { [skillId]: { enabled } },
-    });
-  };
+    })
+  }
 
   if (skills.length === 0) {
     return (
@@ -44,7 +44,7 @@ export function SkillBrowser({
           No skills available
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -84,5 +84,5 @@ export function SkillBrowser({
         ))}
       </div>
     </div>
-  );
+  )
 }

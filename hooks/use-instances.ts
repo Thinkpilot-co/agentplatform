@@ -1,28 +1,28 @@
-"use client";
+'use client'
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchInstances, addInstance, removeInstance } from "@/lib/rpc";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { fetchInstances, addInstance, removeInstance } from '@/lib/rpc'
 
 export function useInstances() {
   return useQuery({
-    queryKey: ["instances"],
+    queryKey: ['instances'],
     queryFn: fetchInstances,
     refetchInterval: 10_000,
-  });
+  })
 }
 
 export function useAddInstance() {
-  const qc = useQueryClient();
+  const qc = useQueryClient()
   return useMutation({
     mutationFn: addInstance,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["instances"] }),
-  });
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['instances'] }),
+  })
 }
 
 export function useRemoveInstance() {
-  const qc = useQueryClient();
+  const qc = useQueryClient()
   return useMutation({
     mutationFn: removeInstance,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["instances"] }),
-  });
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['instances'] }),
+  })
 }

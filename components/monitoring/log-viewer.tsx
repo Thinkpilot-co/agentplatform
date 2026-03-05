@@ -1,31 +1,33 @@
-"use client";
+'use client'
 
-import { useRef, useEffect, useState } from "react";
-import { useLogs } from "@/hooks/use-logs";
-import { Loader2, Pause, Play, Search } from "lucide-react";
+import { useRef, useEffect, useState } from 'react'
+import { useLogs } from '@/hooks/use-logs'
+import { Loader2, Pause, Play, Search } from 'lucide-react'
 
 export function LogViewer({ instanceId }: { instanceId: string }) {
-  const { data, isLoading } = useLogs(instanceId, { lines: 200 });
-  const [autoScroll, setAutoScroll] = useState(true);
-  const [search, setSearch] = useState("");
-  const [levelFilter, setLevelFilter] = useState<string>("");
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const { data, isLoading } = useLogs(instanceId, { lines: 200 })
+  const [autoScroll, setAutoScroll] = useState(true)
+  const [search, setSearch] = useState('')
+  const [levelFilter, setLevelFilter] = useState<string>('')
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const lines = Array.isArray(data) ? data : (data as { lines?: unknown[] })?.lines ?? [];
+  const lines = Array.isArray(data)
+    ? data
+    : ((data as { lines?: unknown[] })?.lines ?? [])
 
   useEffect(() => {
     if (autoScroll && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [lines, autoScroll]);
+  }, [lines, autoScroll])
 
   const filteredLines = lines.filter((line: unknown) => {
-    const str = typeof line === "string" ? line : JSON.stringify(line);
-    if (levelFilter && !str.toLowerCase().includes(levelFilter)) return false;
+    const str = typeof line === 'string' ? line : JSON.stringify(line)
+    if (levelFilter && !str.toLowerCase().includes(levelFilter)) return false
     if (search && !str.toLowerCase().includes(search.toLowerCase()))
-      return false;
-    return true;
-  });
+      return false
+    return true
+  })
 
   return (
     <div className="flex flex-col gap-3">
@@ -58,8 +60,8 @@ export function LogViewer({ instanceId }: { instanceId: string }) {
           onClick={() => setAutoScroll(!autoScroll)}
           className={`flex items-center gap-1 rounded-md border border-[var(--border)] px-3 py-2 text-xs ${
             autoScroll
-              ? "bg-[var(--primary)] text-white"
-              : "bg-[var(--muted)] text-[var(--muted-foreground)]"
+              ? 'bg-[var(--primary)] text-white'
+              : 'bg-[var(--muted)] text-[var(--muted-foreground)]'
           }`}
         >
           {autoScroll ? (
@@ -88,32 +90,27 @@ export function LogViewer({ instanceId }: { instanceId: string }) {
         ) : (
           <pre className="whitespace-pre-wrap font-mono text-xs leading-5 text-zinc-300">
             {filteredLines.map((line: unknown, i: number) => {
-              const str =
-                typeof line === "string" ? line : JSON.stringify(line);
+              const str = typeof line === 'string' ? line : JSON.stringify(line)
               const isError =
-                str.toLowerCase().includes("error") ||
-                str.toLowerCase().includes("err");
+                str.toLowerCase().includes('error') ||
+                str.toLowerCase().includes('err')
               const isWarn =
-                str.toLowerCase().includes("warn") ||
-                str.toLowerCase().includes("warning");
+                str.toLowerCase().includes('warn') ||
+                str.toLowerCase().includes('warning')
               return (
                 <div
                   key={i}
                   className={
-                    isError
-                      ? "text-red-400"
-                      : isWarn
-                        ? "text-yellow-400"
-                        : ""
+                    isError ? 'text-red-400' : isWarn ? 'text-yellow-400' : ''
                   }
                 >
                   {str}
                 </div>
-              );
+              )
             })}
           </pre>
         )}
       </div>
     </div>
-  );
+  )
 }

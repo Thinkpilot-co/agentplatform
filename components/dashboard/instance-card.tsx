@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { Server, Users, Radio } from "lucide-react";
-import { StatusBadge } from "./status-badge";
-import { timeAgo } from "@/lib/utils";
+import Link from 'next/link'
+import { Server, Users, Radio } from 'lucide-react'
+import { StatusBadge } from './status-badge'
+import { timeAgo } from '@/lib/utils'
 
 interface InstanceCardProps {
-  id: string;
-  name: string;
-  url: string;
-  status: "connected" | "connecting" | "disconnected" | "error";
-  tags: string[];
-  agentCount: number;
-  serverVersion?: string;
-  health?: { ok: boolean };
-  lastConnected?: number;
+  id: string
+  name: string
+  url: string
+  status: 'connected' | 'connecting' | 'disconnected' | 'error'
+  tags: string[]
+  agentCount: number
+  serverVersion?: string
+  health?: { ok: boolean }
+  lastConnected?: number
 }
 
 export function InstanceCard({
@@ -39,8 +39,8 @@ export function InstanceCard({
           <span className="font-medium">{name}</span>
         </div>
         <StatusBadge
-          status={health?.ok === false ? "unhealthy" : status}
-          label={health?.ok === false ? "unhealthy" : status}
+          status={health?.ok === false ? 'unhealthy' : status}
+          label={health?.ok === false ? 'unhealthy' : status}
         />
       </div>
 
@@ -51,12 +51,11 @@ export function InstanceCard({
       <div className="mt-3 flex items-center gap-4 text-xs text-[var(--muted-foreground)]">
         <span className="flex items-center gap-1">
           <Users className="h-3 w-3" />
-          {agentCount} agent{agentCount !== 1 ? "s" : ""}
+          {agentCount} agent{agentCount !== 1 ? 's' : ''}
         </span>
         {serverVersion && (
           <span className="flex items-center gap-1">
-            <Radio className="h-3 w-3" />
-            v{serverVersion}
+            <Radio className="h-3 w-3" />v{serverVersion}
           </span>
         )}
       </div>
@@ -79,5 +78,5 @@ export function InstanceCard({
         </div>
       )}
     </Link>
-  );
+  )
 }

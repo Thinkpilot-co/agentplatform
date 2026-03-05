@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { ChannelGrid } from "@/components/channels/channel-grid";
-import { useChannels } from "@/hooks/use-channels";
-import { Loader2 } from "lucide-react";
+import { useParams } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { ChannelGrid } from '@/components/channels/channel-grid'
+import { useChannels } from '@/hooks/use-channels'
+import { Loader2 } from 'lucide-react'
 
 export default function ChannelsPage() {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = useChannels(id);
+  const { id } = useParams<{ id: string }>()
+  const { data, isLoading } = useChannels(id)
 
-  const channels = data?.channels ?? [];
+  const channels = data?.channels ?? []
 
   return (
     <>
@@ -28,5 +28,5 @@ export default function ChannelsPage() {
         )}
       </div>
     </>
-  );
+  )
 }

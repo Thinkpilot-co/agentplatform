@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { SessionList } from "@/components/monitoring/session-list";
+import { useParams } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { SessionList } from '@/components/monitoring/session-list'
 
 export default function SessionsPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>()
 
   return (
     <>
@@ -14,5 +14,5 @@ export default function SessionsPage() {
         <SessionList instanceId={id} />
       </div>
     </>
-  );
+  )
 }

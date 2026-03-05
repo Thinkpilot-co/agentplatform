@@ -1,24 +1,24 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { StatusBadge } from "@/components/dashboard/status-badge";
-import { ContainerActions } from "@/components/docker/container-actions";
-import { useContainerDetail } from "@/hooks/use-docker";
-import { formatBytes } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+import { useParams } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { StatusBadge } from '@/components/dashboard/status-badge'
+import { ContainerActions } from '@/components/docker/container-actions'
+import { useContainerDetail } from '@/hooks/use-docker'
+import { formatBytes } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
 export default function ContainerDetailPage() {
-  const { containerId } = useParams<{ containerId: string }>();
-  const { data, isLoading } = useContainerDetail(containerId);
+  const { containerId } = useParams<{ containerId: string }>()
+  const { data, isLoading } = useContainerDetail(containerId)
 
   if (isLoading || !data) {
     return (
       <div className="flex items-center justify-center py-24">
         <Loader2 className="h-6 w-6 animate-spin text-[var(--muted-foreground)]" />
       </div>
-    );
+    )
   }
 
   return (
@@ -50,7 +50,7 @@ export default function ContainerDetailPage() {
             <div className="rounded-lg border border-[var(--border)] p-4">
               <p className="text-xs text-[var(--muted-foreground)]">Memory</p>
               <p className="mt-1 text-lg font-semibold">
-                {formatBytes(data.stats.memoryUsage)} /{" "}
+                {formatBytes(data.stats.memoryUsage)} /{' '}
                 {formatBytes(data.stats.memoryLimit)}
               </p>
               <p className="text-xs text-[var(--muted-foreground)]">
@@ -76,17 +76,17 @@ export default function ContainerDetailPage() {
                       <span className="text-[var(--muted-foreground)]">
                         {key}
                       </span>
-                      {" -> "}
+                      {' -> '}
                       {Array.isArray(bindings)
                         ? bindings
                             .map(
                               (b: { HostIp: string; HostPort: string }) =>
-                                `${b.HostIp || "0.0.0.0"}:${b.HostPort}`
+                                `${b.HostIp || '0.0.0.0'}:${b.HostPort}`,
                             )
-                            .join(", ")
-                        : "not bound"}
+                            .join(', ')
+                        : 'not bound'}
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>
@@ -110,19 +110,17 @@ export default function ContainerDetailPage() {
                   {data.volumes.map(
                     (
                       v: { Source: string; Destination: string; Mode: string },
-                      i: number
+                      i: number,
                     ) => (
                       <tr
                         key={i}
                         className="border-b border-[var(--border)] last:border-0"
                       >
                         <td className="px-4 py-2 font-mono">{v.Source}</td>
-                        <td className="px-4 py-2 font-mono">
-                          {v.Destination}
-                        </td>
-                        <td className="px-4 py-2">{v.Mode || "rw"}</td>
+                        <td className="px-4 py-2 font-mono">{v.Destination}</td>
+                        <td className="px-4 py-2">{v.Mode || 'rw'}</td>
                       </tr>
-                    )
+                    ),
                   )}
                 </tbody>
               </table>
@@ -133,24 +131,21 @@ export default function ContainerDetailPage() {
         {/* Environment Variables */}
         {data.env && data.env.length > 0 && (
           <section>
-            <h3 className="mb-2 text-sm font-medium">
-              Environment Variables
-            </h3>
+            <h3 className="mb-2 text-sm font-medium">Environment Variables</h3>
             <div className="max-h-64 overflow-auto rounded-lg border border-[var(--border)] p-4">
               <div className="space-y-0.5 font-mono text-xs">
                 {data.env.map((e: string, i: number) => {
-                  const [key, ...rest] = e.split("=");
-                  const value = rest.join("=");
-                  const isSensitive = /token|password|secret|key/i.test(key);
+                  const [key, ...rest] = e.split('=')
+                  const value = rest.join('=')
+                  const isSensitive = /token|password|secret|key/i.test(key)
                   return (
                     <div key={i}>
                       <span className="text-[var(--muted-foreground)]">
                         {key}
                       </span>
-                      =
-                      <span>{isSensitive ? "********" : value}</span>
+                      =<span>{isSensitive ? '********' : value}</span>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -158,5 +153,5 @@ export default function ContainerDetailPage() {
         )}
       </div>
     </>
-  );
+  )
 }

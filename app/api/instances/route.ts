@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { initPlatform } from "@/core/init";
-import { instanceManager } from "@/core/instance-manager";
-import * as store from "@/core/instance-store";
+import { NextResponse } from 'next/server'
+import { initPlatform } from '@/core/init'
+import { instanceManager } from '@/core/instance-manager'
+import * as store from '@/core/instance-store'
 
-initPlatform();
+initPlatform()
 
 export async function GET() {
-  const states = instanceManager.getAllStates();
+  const states = instanceManager.getAllStates()
   return NextResponse.json({
     instances: states.map((s) => ({
       id: s.config.id,
@@ -21,17 +21,17 @@ export async function GET() {
       lastConnected: s.lastConnected,
       lastHealthCheck: s.lastHealthCheck,
     })),
-  });
+  })
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  const body = await request.json()
 
   if (!body.id || !body.name || !body.url) {
     return NextResponse.json(
-      { error: "Missing required fields: id, name, url" },
-      { status: 400 }
-    );
+      { error: 'Missing required fields: id, name, url' },
+      { status: 400 },
+    )
   }
 
   const config = {
@@ -40,13 +40,13 @@ export async function POST(request: Request) {
     url: body.url,
     token: body.token ?? null,
     tags: body.tags ?? [],
-  };
+  }
 
   // Save to disk
-  store.addInstance(config);
+  store.addInstance(config)
 
   // Connect
-  instanceManager.addInstance(config);
+  instanceManager.addInstance(config)
 
-  return NextResponse.json({ ok: true, instance: config });
+  return NextResponse.json({ ok: true, instance: config })
 }

@@ -1,34 +1,34 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useCreateAgent, useUpdateAgent } from "@/hooks/use-agents";
-import { ModelSelector } from "./model-selector";
-import { X } from "lucide-react";
-import type { AgentInfo } from "@/core/types";
+import { useState } from 'react'
+import { useCreateAgent, useUpdateAgent } from '@/hooks/use-agents'
+import { ModelSelector } from './model-selector'
+import { X } from 'lucide-react'
+import type { AgentInfo } from '@/core/types'
 
 export function AgentForm({
   instanceId,
   agent,
   onClose,
 }: {
-  instanceId: string;
-  agent?: AgentInfo;
-  onClose: () => void;
+  instanceId: string
+  agent?: AgentInfo
+  onClose: () => void
 }) {
-  const isEditing = !!agent;
-  const createAgent = useCreateAgent(instanceId);
-  const updateAgent = useUpdateAgent(instanceId);
+  const isEditing = !!agent
+  const createAgent = useCreateAgent(instanceId)
+  const updateAgent = useUpdateAgent(instanceId)
 
   const [form, setForm] = useState({
-    key: agent?.key ?? "",
-    name: agent?.name ?? "",
-    emoji: agent?.emoji ?? "",
-    model: agent?.model ?? "",
-    persona: agent?.persona ?? "",
-  });
+    key: agent?.key ?? '',
+    name: agent?.name ?? '',
+    emoji: agent?.emoji ?? '',
+    model: agent?.model ?? '',
+    persona: agent?.persona ?? '',
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (isEditing) {
       await updateAgent.mutateAsync({
@@ -37,21 +37,21 @@ export function AgentForm({
         emoji: form.emoji,
         model: form.model,
         persona: form.persona,
-      });
+      })
     } else {
       await createAgent.mutateAsync({
-        key: form.key || form.name.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+        key: form.key || form.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
         name: form.name,
         emoji: form.emoji,
         model: form.model,
         persona: form.persona,
-      });
+      })
     }
 
-    onClose();
-  };
+    onClose()
+  }
 
-  const isPending = createAgent.isPending || updateAgent.isPending;
+  const isPending = createAgent.isPending || updateAgent.isPending
 
   return (
     <form
@@ -60,7 +60,7 @@ export function AgentForm({
     >
       <div className="mb-3 flex items-center justify-between">
         <h4 className="text-sm font-medium">
-          {isEditing ? `Edit ${agent!.name}` : "New Agent"}
+          {isEditing ? `Edit ${agent!.name}` : 'New Agent'}
         </h4>
         <button
           type="button"
@@ -145,10 +145,10 @@ export function AgentForm({
           className="rounded-md bg-[var(--primary)] px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
         >
           {isPending
-            ? "Saving..."
+            ? 'Saving...'
             : isEditing
-              ? "Update Agent"
-              : "Create Agent"}
+              ? 'Update Agent'
+              : 'Create Agent'}
         </button>
         <button
           type="button"
@@ -159,5 +159,5 @@ export function AgentForm({
         </button>
       </div>
     </form>
-  );
+  )
 }

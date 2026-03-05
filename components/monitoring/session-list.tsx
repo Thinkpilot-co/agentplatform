@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useRpc } from "@/hooks/use-rpc";
-import { MessageSquare, Loader2 } from "lucide-react";
-import { timeAgo } from "@/lib/utils";
-import type { SessionInfo } from "@/core/types";
+import { useRpc } from '@/hooks/use-rpc'
+import { MessageSquare, Loader2 } from 'lucide-react'
+import { timeAgo } from '@/lib/utils'
+import type { SessionInfo } from '@/core/types'
 
 export function SessionList({ instanceId }: { instanceId: string }) {
   const { data, isLoading } = useRpc<{ sessions: SessionInfo[] }>(
     instanceId,
-    "sessions.list",
+    'sessions.list',
     { limit: 50 },
-    { refetchInterval: 15_000 }
-  );
+    { refetchInterval: 15_000 },
+  )
 
-  const sessions = data?.sessions ?? [];
+  const sessions = data?.sessions ?? []
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
       </div>
-    );
+    )
   }
 
   if (sessions.length === 0) {
@@ -31,7 +31,7 @@ export function SessionList({ instanceId }: { instanceId: string }) {
           No sessions yet
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -58,21 +58,21 @@ export function SessionList({ instanceId }: { instanceId: string }) {
               </td>
               <td className="px-4 py-2 text-xs">{session.agentKey}</td>
               <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
-                {session.channelId ?? "—"}
+                {session.channelId ?? '—'}
               </td>
               <td className="px-4 py-2 text-xs">
-                {session.messageCount ?? "—"}
+                {session.messageCount ?? '—'}
               </td>
               <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
                 {timeAgo(session.updatedAt)}
               </td>
               <td className="max-w-xs truncate px-4 py-2 text-xs text-[var(--muted-foreground)]">
-                {session.preview ?? "—"}
+                {session.preview ?? '—'}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  );
+  )
 }

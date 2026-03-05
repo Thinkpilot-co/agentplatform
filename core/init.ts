@@ -1,31 +1,30 @@
-import { instanceManager } from "./instance-manager";
-import { startHealthMonitor, stopHealthMonitor } from "./health-monitor";
-import { startDiscovery, stopDiscovery } from "./docker-discovery";
+import { instanceManager } from './instance-manager'
+import { startHealthMonitor, stopHealthMonitor } from './health-monitor'
+import { startDiscovery, stopDiscovery } from './docker-discovery'
+import { createLogger } from './logger'
 
-let initialized = false;
+const log = createLogger('platform')
+
+let initialized = false
 
 /** Initialize the platform core (idempotent, safe to call multiple times) */
 export function initPlatform() {
-  if (initialized) return;
-  initialized = true;
+  if (initialized) return
+  initialized = true
 
-  console.log("[platform] Initializing...");
+  log.info('Initializing platform')
 
-  // Connect to all configured instances
-  instanceManager.init();
+  instanceManager.init()
+  startHealthMonitor()
+  startDiscovery()
 
-  // Start health monitoring
-  startHealthMonitor();
-
-  // Start Docker auto-discovery
-  startDiscovery();
-
-  console.log("[platform] Ready");
+  log.info('Platform ready')
 }
 
 export function shutdownPlatform() {
-  stopHealthMonitor();
-  stopDiscovery();
-  instanceManager.destroy();
-  initialized = false;
+  log.info('Shutting down platform')
+  stopHealthMonitor()
+  stopDiscovery()
+  instanceManager.destroy()
+  initialized = false
 }

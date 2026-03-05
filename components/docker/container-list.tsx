@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { ContainerCard } from "./container-card";
-import type { DockerContainerInfo } from "@/core/types";
+import { ContainerCard } from './container-card'
+import type { DockerContainerInfo } from '@/core/types'
 
 export function DockerContainerList({
   containers,
 }: {
-  containers: DockerContainerInfo[];
+  containers: DockerContainerInfo[]
 }) {
   if (containers.length === 0) {
     return (
       <p className="py-4 text-center text-sm text-[var(--muted-foreground)]">
         No containers found
       </p>
-    );
+    )
   }
 
   return (
@@ -22,5 +22,5 @@ export function DockerContainerList({
         <ContainerCard key={c.id} container={c} />
       ))}
     </div>
-  );
+  )
 }

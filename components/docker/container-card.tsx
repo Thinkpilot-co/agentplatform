@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { Container } from "lucide-react";
-import { StatusBadge } from "@/components/dashboard/status-badge";
-import { ContainerActions } from "./container-actions";
-import type { DockerContainerInfo } from "@/core/types";
+import Link from 'next/link'
+import { Container } from 'lucide-react'
+import { StatusBadge } from '@/components/dashboard/status-badge'
+import { ContainerActions } from './container-actions'
+import type { DockerContainerInfo } from '@/core/types'
 
 export function ContainerCard({
   container,
 }: {
-  container: DockerContainerInfo;
+  container: DockerContainerInfo
 }) {
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
@@ -43,16 +43,13 @@ export function ContainerCard({
           {container.ports
             .filter((p) => p.publicPort)
             .map((p) => `${p.publicPort}:${p.privatePort}`)
-            .join(", ")}
+            .join(', ')}
         </div>
       )}
 
       <div className="mt-3">
-        <ContainerActions
-          containerId={container.id}
-          state={container.state}
-        />
+        <ContainerActions containerId={container.id} state={container.state} />
       </div>
     </div>
-  );
+  )
 }

@@ -1,28 +1,25 @@
-"use client";
+'use client'
 
-import { useRpc } from "@/hooks/use-rpc";
-import { Loader2, BarChart3 } from "lucide-react";
+import { useRpc } from '@/hooks/use-rpc'
+import { Loader2, BarChart3 } from 'lucide-react'
 
 export function UsageChart({ instanceId }: { instanceId: string }) {
-  const { data: usageData, isLoading: usageLoading } = useRpc<Record<string, unknown>>(
-    instanceId,
-    "usage.status",
-    undefined,
-    { refetchInterval: 30_000 }
-  );
+  const { data: usageData, isLoading: usageLoading } = useRpc<
+    Record<string, unknown>
+  >(instanceId, 'usage.status', undefined, { refetchInterval: 30_000 })
   const { data: costData } = useRpc<Record<string, unknown>>(
     instanceId,
-    "usage.cost",
+    'usage.cost',
     undefined,
-    { refetchInterval: 30_000 }
-  );
+    { refetchInterval: 30_000 },
+  )
 
   if (usageLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
       </div>
-    );
+    )
   }
 
   if (!usageData) {
@@ -33,11 +30,11 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
           No usage data available
         </p>
       </div>
-    );
+    )
   }
 
-  const usage = usageData as Record<string, unknown>;
-  const cost = costData as Record<string, unknown> | undefined;
+  const usage = usageData as Record<string, unknown>
+  const cost = costData as Record<string, unknown> | undefined
 
   return (
     <div className="space-y-4">
@@ -64,7 +61,7 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
             label="Estimated Cost"
             value={`$${((cost.totalCost as number) ?? 0).toFixed(4)}`}
           />
-          {typeof cost.period === "string" && (
+          {typeof cost.period === 'string' && (
             <UsageStat label="Period" value={cost.period} />
           )}
         </div>
@@ -80,21 +77,21 @@ export function UsageChart({ instanceId }: { instanceId: string }) {
         </pre>
       </details>
     </div>
-  );
+  )
 }
 
 function UsageStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
       <p className="text-xs text-[var(--muted-foreground)]">{label}</p>
-      <p className="mt-1 text-xl font-semibold">{value ?? "—"}</p>
+      <p className="mt-1 text-xl font-semibold">{value ?? '—'}</p>
     </div>
-  );
+  )
 }
 
 function formatNumber(n: number | undefined): string {
-  if (n === undefined || n === null) return "—";
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return n.toString();
+  if (n === undefined || n === null) return '—'
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
+  return n.toString()
 }

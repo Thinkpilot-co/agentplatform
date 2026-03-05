@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { SchemaForm } from "@/components/config/schema-form";
+import { useParams } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { SchemaForm } from '@/components/config/schema-form'
 
 export default function ConfigPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>()
 
   return (
     <>
@@ -17,5 +17,5 @@ export default function ConfigPage() {
         <SchemaForm instanceId={id} />
       </div>
     </>
-  );
+  )
 }

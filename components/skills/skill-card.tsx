@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import type { SkillInfo } from "@/core/types";
-import { ToggleSwitch } from "@/components/ui/toggle-switch";
+import type { SkillInfo } from '@/core/types'
+import { ToggleSwitch } from '@/components/ui/toggle-switch'
 
 export function SkillCard({
   skill,
   onToggle,
   isToggling,
 }: {
-  skill: SkillInfo;
-  onToggle: (id: string, enabled: boolean) => void;
-  isToggling: boolean;
+  skill: SkillInfo
+  onToggle: (id: string, enabled: boolean) => void
+  isToggling: boolean
 }) {
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
@@ -42,5 +42,5 @@ export function SkillCard({
         </span>
       )}
     </div>
-  );
+  )
 }

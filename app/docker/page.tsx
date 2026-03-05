@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import { Header } from "@/components/dashboard/header";
-import { DockerContainerList } from "@/components/docker/container-list";
-import { useDockerContainers } from "@/hooks/use-docker";
-import { Loader2, Container } from "lucide-react";
+import { Header } from '@/components/dashboard/header'
+import { DockerContainerList } from '@/components/docker/container-list'
+import { useDockerContainers } from '@/hooks/use-docker'
+import { Loader2, Container } from 'lucide-react'
 
 export default function DockerPage() {
-  const { data, isLoading } = useDockerContainers();
+  const { data, isLoading } = useDockerContainers()
 
   return (
     <>
@@ -35,5 +35,5 @@ export default function DockerPage() {
         )}
       </div>
     </>
-  );
+  )
 }

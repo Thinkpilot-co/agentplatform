@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { useInstance } from "@/hooks/use-instance";
-import { StatusBadge } from "@/components/dashboard/status-badge";
-import { Header } from "@/components/dashboard/header";
-import { Loader2, Users, Radio, Heart, Server } from "lucide-react";
-import { formatUptime, timeAgo } from "@/lib/utils";
+import { useParams } from 'next/navigation'
+import { useInstance } from '@/hooks/use-instance'
+import { StatusBadge } from '@/components/dashboard/status-badge'
+import { Header } from '@/components/dashboard/header'
+import { Loader2, Users, Radio, Heart, Server } from 'lucide-react'
+import { formatUptime, timeAgo } from '@/lib/utils'
 
 export default function InstanceOverviewPage() {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = useInstance(id);
+  const { id } = useParams<{ id: string }>()
+  const { data, isLoading } = useInstance(id)
 
   if (isLoading || !data) {
     return (
       <div className="flex items-center justify-center py-24">
         <Loader2 className="h-6 w-6 animate-spin text-[var(--muted-foreground)]" />
       </div>
-    );
+    )
   }
 
-  const agents = data.agents ?? [];
-  const channels = data.channels ?? [];
+  const agents = data.agents ?? []
+  const channels = data.channels ?? []
 
   return (
     <>
@@ -35,10 +35,10 @@ export default function InstanceOverviewPage() {
             value={
               <StatusBadge
                 status={
-                  data.status === "connected"
+                  data.status === 'connected'
                     ? data.health?.ok !== false
-                      ? "healthy"
-                      : "unhealthy"
+                      ? 'healthy'
+                      : 'unhealthy'
                     : data.status
                 }
               />
@@ -47,7 +47,9 @@ export default function InstanceOverviewPage() {
           <StatCard
             icon={Users}
             label="Agents"
-            value={<span className="text-xl font-semibold">{agents.length}</span>}
+            value={
+              <span className="text-xl font-semibold">{agents.length}</span>
+            }
           />
           <StatCard
             icon={Radio}
@@ -61,7 +63,7 @@ export default function InstanceOverviewPage() {
             label="Version"
             value={
               <span className="text-sm font-mono">
-                {data.serverVersion ?? "N/A"}
+                {data.serverVersion ?? 'N/A'}
               </span>
             }
           />
@@ -84,12 +86,12 @@ export default function InstanceOverviewPage() {
                 <tbody>
                   {agents.map(
                     (agent: {
-                      key: string;
-                      name: string;
-                      emoji?: string;
-                      model?: string;
-                      skills?: string[];
-                      enabled?: boolean;
+                      key: string
+                      name: string
+                      emoji?: string
+                      model?: string
+                      skills?: string[]
+                      enabled?: boolean
                     }) => (
                       <tr
                         key={agent.key}
@@ -102,7 +104,7 @@ export default function InstanceOverviewPage() {
                           {agent.name}
                         </td>
                         <td className="px-4 py-2 font-mono text-xs text-[var(--muted-foreground)]">
-                          {agent.model ?? "—"}
+                          {agent.model ?? '—'}
                         </td>
                         <td className="px-4 py-2 text-xs text-[var(--muted-foreground)]">
                           {agent.skills?.length ?? 0}
@@ -111,16 +113,16 @@ export default function InstanceOverviewPage() {
                           <StatusBadge
                             status={
                               agent.enabled === false
-                                ? "disconnected"
-                                : "connected"
+                                ? 'disconnected'
+                                : 'connected'
                             }
                             label={
-                              agent.enabled === false ? "disabled" : "active"
+                              agent.enabled === false ? 'disabled' : 'active'
                             }
                           />
                         </td>
                       </tr>
-                    )
+                    ),
                   )}
                 </tbody>
               </table>
@@ -135,10 +137,10 @@ export default function InstanceOverviewPage() {
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {channels.map(
                 (ch: {
-                  id: string;
-                  type: string;
-                  name?: string;
-                  connected: boolean;
+                  id: string
+                  type: string
+                  name?: string
+                  connected: boolean
                 }) => (
                   <div
                     key={ch.id}
@@ -153,10 +155,10 @@ export default function InstanceOverviewPage() {
                       </span>
                     </div>
                     <StatusBadge
-                      status={ch.connected ? "connected" : "disconnected"}
+                      status={ch.connected ? 'connected' : 'disconnected'}
                     />
                   </div>
-                )
+                ),
               )}
             </div>
           </section>
@@ -187,7 +189,7 @@ export default function InstanceOverviewPage() {
         </section>
       </div>
     </>
-  );
+  )
 }
 
 function StatCard({
@@ -195,9 +197,9 @@ function StatCard({
   label,
   value,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  value: React.ReactNode
 }) {
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
@@ -207,7 +209,7 @@ function StatCard({
       </div>
       <div className="mt-1">{value}</div>
     </div>
-  );
+  )
 }
 
 function InfoRow({
@@ -215,14 +217,14 @@ function InfoRow({
   value,
   mono,
 }: {
-  label: string;
-  value: string;
-  mono?: boolean;
+  label: string
+  value: string
+  mono?: boolean
 }) {
   return (
     <div>
       <span className="text-xs text-[var(--muted-foreground)]">{label}</span>
-      <p className={mono ? "font-mono text-xs" : ""}>{value}</p>
+      <p className={mono ? 'font-mono text-xs' : ''}>{value}</p>
     </div>
-  );
+  )
 }

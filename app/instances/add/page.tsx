@@ -1,39 +1,37 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Header } from "@/components/dashboard/header";
-import { useAddInstance } from "@/hooks/use-instances";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Header } from '@/components/dashboard/header'
+import { useAddInstance } from '@/hooks/use-instances'
 
 export default function AddInstancePage() {
-  const router = useRouter();
-  const addInstance = useAddInstance();
+  const router = useRouter()
+  const addInstance = useAddInstance()
 
   const [form, setForm] = useState({
-    id: "",
-    name: "",
-    url: "ws://localhost:18789",
-    token: "",
-    tags: "",
-  });
+    id: '',
+    name: '',
+    url: 'ws://localhost:18789',
+    token: '',
+    tags: '',
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const id = form.id || form.name.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+    const id = form.id || form.name.toLowerCase().replace(/[^a-z0-9-]/g, '-')
 
     await addInstance.mutateAsync({
       id,
       name: form.name,
       url: form.url,
       token: form.token || undefined,
-      tags: form.tags
-        ? form.tags.split(",").map((t) => t.trim())
-        : [],
-    });
+      tags: form.tags ? form.tags.split(',').map((t) => t.trim()) : [],
+    })
 
-    router.push("/instances");
-  };
+    router.push('/instances')
+  }
 
   return (
     <>
@@ -43,10 +41,7 @@ export default function AddInstancePage() {
       />
 
       <div className="flex-1 p-6">
-        <form
-          onSubmit={handleSubmit}
-          className="mx-auto max-w-lg space-y-4"
-        >
+        <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Name</label>
             <input
@@ -60,7 +55,9 @@ export default function AddInstancePage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium">ID (optional)</label>
+            <label className="mb-1 block text-sm font-medium">
+              ID (optional)
+            </label>
             <input
               type="text"
               value={form.id}
@@ -71,7 +68,9 @@ export default function AddInstancePage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium">Gateway URL</label>
+            <label className="mb-1 block text-sm font-medium">
+              Gateway URL
+            </label>
             <input
               type="text"
               required
@@ -120,7 +119,7 @@ export default function AddInstancePage() {
               disabled={addInstance.isPending}
               className="rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {addInstance.isPending ? "Connecting..." : "Add Instance"}
+              {addInstance.isPending ? 'Connecting...' : 'Add Instance'}
             </button>
             <button
               type="button"
@@ -132,12 +131,10 @@ export default function AddInstancePage() {
           </div>
 
           {addInstance.isError && (
-            <p className="text-sm text-red-400">
-              {addInstance.error.message}
-            </p>
+            <p className="text-sm text-red-400">{addInstance.error.message}</p>
           )}
         </form>
       </div>
     </>
-  );
+  )
 }

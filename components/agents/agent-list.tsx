@@ -1,33 +1,33 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { StatusBadge } from "@/components/dashboard/status-badge";
-import { AgentForm } from "./agent-form";
-import { useDeleteAgent } from "@/hooks/use-agents";
-import { Trash2, Pencil, Plus } from "lucide-react";
-import type { AgentInfo } from "@/core/types";
+import { useState } from 'react'
+import { StatusBadge } from '@/components/dashboard/status-badge'
+import { AgentForm } from './agent-form'
+import { useDeleteAgent } from '@/hooks/use-agents'
+import { Trash2, Pencil, Plus } from 'lucide-react'
+import type { AgentInfo } from '@/core/types'
 
 export function AgentList({
   instanceId,
   agents,
 }: {
-  instanceId: string;
-  agents: AgentInfo[];
+  instanceId: string
+  agents: AgentInfo[]
 }) {
-  const [editing, setEditing] = useState<AgentInfo | null>(null);
-  const [creating, setCreating] = useState(false);
-  const deleteAgent = useDeleteAgent(instanceId);
+  const [editing, setEditing] = useState<AgentInfo | null>(null)
+  const [creating, setCreating] = useState(false)
+  const deleteAgent = useDeleteAgent(instanceId)
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-sm font-medium">
-          {agents.length} Agent{agents.length !== 1 ? "s" : ""}
+          {agents.length} Agent{agents.length !== 1 ? 's' : ''}
         </h3>
         <button
           onClick={() => {
-            setEditing(null);
-            setCreating(true);
+            setEditing(null)
+            setCreating(true)
           }}
           className="flex items-center gap-1 rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
         >
@@ -42,8 +42,8 @@ export function AgentList({
             instanceId={instanceId}
             agent={editing ?? undefined}
             onClose={() => {
-              setCreating(false);
-              setEditing(null);
+              setCreating(false)
+              setEditing(null)
             }}
           />
         </div>
@@ -69,9 +69,7 @@ export function AgentList({
               >
                 <td className="px-4 py-2">
                   <span className="font-medium">
-                    {agent.emoji && (
-                      <span className="mr-1">{agent.emoji}</span>
-                    )}
+                    {agent.emoji && <span className="mr-1">{agent.emoji}</span>}
                     {agent.name}
                   </span>
                   <span className="ml-2 text-xs text-[var(--muted-foreground)]">
@@ -79,7 +77,7 @@ export function AgentList({
                   </span>
                 </td>
                 <td className="px-4 py-2 font-mono text-xs text-[var(--muted-foreground)]">
-                  {agent.model ?? "—"}
+                  {agent.model ?? '—'}
                 </td>
                 <td className="px-4 py-2 text-xs">
                   {agent.skills?.length ?? 0}
@@ -90,17 +88,17 @@ export function AgentList({
                 <td className="px-4 py-2">
                   <StatusBadge
                     status={
-                      agent.enabled === false ? "disconnected" : "connected"
+                      agent.enabled === false ? 'disconnected' : 'connected'
                     }
-                    label={agent.enabled === false ? "disabled" : "active"}
+                    label={agent.enabled === false ? 'disabled' : 'active'}
                   />
                 </td>
                 <td className="px-4 py-2 text-right">
                   <div className="flex justify-end gap-1">
                     <button
                       onClick={() => {
-                        setCreating(false);
-                        setEditing(agent);
+                        setCreating(false)
+                        setEditing(agent)
                       }}
                       className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)]"
                     >
@@ -109,7 +107,7 @@ export function AgentList({
                     <button
                       onClick={() => {
                         if (confirm(`Delete agent "${agent.name}"?`)) {
-                          deleteAgent.mutate(agent.key);
+                          deleteAgent.mutate(agent.key)
                         }
                       }}
                       className="rounded p-1 text-[var(--muted-foreground)] hover:bg-red-600/20 hover:text-red-400"
@@ -134,5 +132,5 @@ export function AgentList({
         </table>
       </div>
     </div>
-  );
+  )
 }

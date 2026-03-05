@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import { Play, Square, RotateCw } from "lucide-react";
-import { useDockerAction } from "@/hooks/use-docker";
+import { Play, Square, RotateCw } from 'lucide-react'
+import { useDockerAction } from '@/hooks/use-docker'
 
 export function ContainerActions({
   containerId,
   state,
 }: {
-  containerId: string;
-  state: string;
+  containerId: string
+  state: string
 }) {
-  const action = useDockerAction();
-  const isLoading = action.isPending;
+  const action = useDockerAction()
+  const isLoading = action.isPending
 
   return (
     <div className="flex gap-1">
-      {state !== "running" && (
+      {state !== 'running' && (
         <button
-          onClick={() => action.mutate({ id: containerId, action: "start" })}
+          onClick={() => action.mutate({ id: containerId, action: 'start' })}
           disabled={isLoading}
           className="flex items-center gap-1 rounded bg-emerald-600/20 px-2 py-1 text-[10px] font-medium text-emerald-400 transition-colors hover:bg-emerald-600/30 disabled:opacity-50"
         >
@@ -25,9 +25,9 @@ export function ContainerActions({
           Start
         </button>
       )}
-      {state === "running" && (
+      {state === 'running' && (
         <button
-          onClick={() => action.mutate({ id: containerId, action: "stop" })}
+          onClick={() => action.mutate({ id: containerId, action: 'stop' })}
           disabled={isLoading}
           className="flex items-center gap-1 rounded bg-red-600/20 px-2 py-1 text-[10px] font-medium text-red-400 transition-colors hover:bg-red-600/30 disabled:opacity-50"
         >
@@ -36,7 +36,7 @@ export function ContainerActions({
         </button>
       )}
       <button
-        onClick={() => action.mutate({ id: containerId, action: "restart" })}
+        onClick={() => action.mutate({ id: containerId, action: 'restart' })}
         disabled={isLoading}
         className="flex items-center gap-1 rounded bg-[var(--secondary)] px-2 py-1 text-[10px] font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--accent)] disabled:opacity-50"
       >
@@ -44,5 +44,5 @@ export function ContainerActions({
         Restart
       </button>
     </div>
-  );
+  )
 }

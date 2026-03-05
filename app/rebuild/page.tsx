@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Header } from "@/components/dashboard/header";
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Header } from '@/components/dashboard/header'
 import {
   Hammer,
   Play,
@@ -14,144 +14,157 @@ import {
   Package,
   Rocket,
   HeartPulse,
-} from "lucide-react";
-import type { BuildStep, BuildState } from "@/core/rebuilder";
+} from 'lucide-react'
+import type { BuildStep, BuildState } from '@/core/rebuilder'
 
 const STEP_LABELS: Record<BuildStep, { label: string; icon: typeof Hammer }> = {
-  idle: { label: "Ready", icon: Hammer },
-  sync: { label: "Syncing from OpenClaw", icon: RefreshCw },
-  build: { label: "Building Docker image", icon: Package },
-  deploy: { label: "Deploying container", icon: Rocket },
-  healthcheck: { label: "Health check", icon: HeartPulse },
-  done: { label: "Complete", icon: Check },
-  error: { label: "Failed", icon: X },
-};
+  idle: { label: 'Ready', icon: Hammer },
+  sync: { label: 'Syncing from OpenClaw', icon: RefreshCw },
+  build: { label: 'Building Docker image', icon: Package },
+  deploy: { label: 'Deploying container', icon: Rocket },
+  healthcheck: { label: 'Health check', icon: HeartPulse },
+  done: { label: 'Complete', icon: Check },
+  error: { label: 'Failed', icon: X },
+}
 
-const STEPS: BuildStep[] = ["sync", "build", "deploy", "healthcheck", "done"];
+const STEPS: BuildStep[] = ['sync', 'build', 'deploy', 'healthcheck', 'done']
 
 export default function RebuildPage() {
   const [state, setState] = useState<BuildState>({
-    status: "idle",
+    status: 'idle',
     running: false,
     startedAt: null,
     finishedAt: null,
     error: null,
     imageTag: null,
     logs: [],
-  });
-  const [logs, setLogs] = useState<string[]>([]);
+  })
+  const [logs, setLogs] = useState<string[]>([])
   const [options, setOptions] = useState({
     sync: true,
     deploy: true,
-  });
-  const logsRef = useRef<HTMLDivElement>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  })
+  const logsRef = useRef<HTMLDivElement>(null)
+  const eventSourceRef = useRef<EventSource | null>(null)
 
   // Fetch initial state
   useEffect(() => {
-    fetch("/api/rebuild")
+    fetch('/api/rebuild')
       .then((r) => r.json())
       .then((data) => {
-        setState(data);
-        if (data.logs) setLogs(data.logs);
+        setState(data)
+        if (data.logs) setLogs(data.logs)
         // If a build is running, connect to stream
         if (data.running) {
-          connectStream();
+          connectStream()
         }
       })
-      .catch(() => {});
+      .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   // Auto-scroll logs
   useEffect(() => {
     if (logsRef.current) {
-      logsRef.current.scrollTop = logsRef.current.scrollHeight;
+      logsRef.current.scrollTop = logsRef.current.scrollHeight
     }
-  }, [logs]);
+  }, [logs])
 
   const connectStream = useCallback(() => {
     if (eventSourceRef.current) {
-      eventSourceRef.current.close();
+      eventSourceRef.current.close()
     }
 
-    const es = new EventSource("/api/rebuild/stream");
-    eventSourceRef.current = es;
+    const es = new EventSource('/api/rebuild/stream')
+    eventSourceRef.current = es
 
-    es.addEventListener("log", (e) => {
-      const line = JSON.parse(e.data) as string;
-      setLogs((prev) => [...prev, line]);
-    });
+    es.addEventListener('log', (e) => {
+      const line = JSON.parse(e.data) as string
+      setLogs((prev) => [...prev, line])
+    })
 
-    es.addEventListener("state", (e) => {
-      const update = JSON.parse(e.data);
-      setState((prev) => ({ ...prev, ...update }));
+    es.addEventListener('state', (e) => {
+      const update = JSON.parse(e.data)
+      setState((prev) => ({ ...prev, ...update }))
 
       // Disconnect when build completes
-      if (!update.running && (update.status === "done" || update.status === "error")) {
+      if (
+        !update.running &&
+        (update.status === 'done' || update.status === 'error')
+      ) {
         // Fetch final state
         setTimeout(() => {
-          fetch("/api/rebuild")
+          fetch('/api/rebuild')
             .then((r) => r.json())
             .then(setState)
-            .catch(() => {});
-        }, 500);
+            .catch(() => {})
+        }, 500)
       }
-    });
+    })
 
     es.onerror = () => {
-      es.close();
-      eventSourceRef.current = null;
-    };
-  }, []);
+      es.close()
+      eventSourceRef.current = null
+    }
+  }, [])
 
   const handleStart = async () => {
-    setLogs([]);
-    setState((prev) => ({ ...prev, running: true, status: "sync", error: null }));
+    setLogs([])
+    setState((prev) => ({
+      ...prev,
+      running: true,
+      status: 'sync',
+      error: null,
+    }))
 
     try {
-      const res = await fetch("/api/rebuild", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/rebuild', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(options),
-      });
+      })
 
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
+        const body = await res.json().catch(() => ({}))
         setState((prev) => ({
           ...prev,
           running: false,
-          status: "error",
-          error: body.error || "Failed to start build",
-        }));
-        return;
+          status: 'error',
+          error: body.error || 'Failed to start build',
+        }))
+        return
       }
 
       // Connect to log stream
-      connectStream();
+      connectStream()
     } catch (err) {
       setState((prev) => ({
         ...prev,
         running: false,
-        status: "error",
-        error: err instanceof Error ? err.message : "Network error",
-      }));
+        status: 'error',
+        error: err instanceof Error ? err.message : 'Network error',
+      }))
     }
-  };
+  }
 
   const handleCancel = async () => {
-    await fetch("/api/rebuild", { method: "DELETE" });
-    eventSourceRef.current?.close();
-    eventSourceRef.current = null;
-    setState((prev) => ({ ...prev, running: false, status: "error", error: "Cancelled" }));
-  };
+    await fetch('/api/rebuild', { method: 'DELETE' })
+    eventSourceRef.current?.close()
+    eventSourceRef.current = null
+    setState((prev) => ({
+      ...prev,
+      running: false,
+      status: 'error',
+      error: 'Cancelled',
+    }))
+  }
 
   const elapsed =
     state.startedAt && state.finishedAt
       ? ((state.finishedAt - state.startedAt) / 1000).toFixed(1)
       : state.startedAt
         ? ((Date.now() - state.startedAt) / 1000).toFixed(0)
-        : null;
+        : null
 
   return (
     <>
@@ -164,13 +177,13 @@ export default function RebuildPage() {
         {/* Pipeline steps */}
         <div className="flex items-center gap-2">
           {STEPS.map((step, i) => {
-            const stepIdx = STEPS.indexOf(state.status);
-            const thisIdx = i;
-            const isActive = state.status === step;
+            const stepIdx = STEPS.indexOf(state.status)
+            const thisIdx = i
+            const isActive = state.status === step
             const isDone =
-              state.status === "done" || (stepIdx > thisIdx && state.running);
-            const isError = state.status === "error" && stepIdx === thisIdx;
-            const StepInfo = STEP_LABELS[step];
+              state.status === 'done' || (stepIdx > thisIdx && state.running)
+            const isError = state.status === 'error' && stepIdx === thisIdx
+            const StepInfo = STEP_LABELS[step]
 
             return (
               <div key={step} className="flex items-center gap-2">
@@ -178,22 +191,22 @@ export default function RebuildPage() {
                   <div
                     className={`h-px w-6 ${
                       isDone
-                        ? "bg-emerald-500"
+                        ? 'bg-emerald-500'
                         : isActive
-                          ? "bg-[var(--primary)]"
-                          : "bg-[var(--border)]"
+                          ? 'bg-[var(--primary)]'
+                          : 'bg-[var(--border)]'
                     }`}
                   />
                 )}
                 <div
                   className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
                     isActive && state.running
-                      ? "bg-[var(--primary)] text-white"
+                      ? 'bg-[var(--primary)] text-white'
                       : isDone
-                        ? "bg-emerald-500/20 text-emerald-400"
+                        ? 'bg-emerald-500/20 text-emerald-400'
                         : isError
-                          ? "bg-red-500/20 text-red-400"
-                          : "bg-[var(--secondary)] text-[var(--muted-foreground)]"
+                          ? 'bg-red-500/20 text-red-400'
+                          : 'bg-[var(--secondary)] text-[var(--muted-foreground)]'
                   }`}
                 >
                   {isActive && state.running ? (
@@ -208,7 +221,7 @@ export default function RebuildPage() {
                   {StepInfo.label}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
 
@@ -261,30 +274,32 @@ export default function RebuildPage() {
 
           {elapsed && (
             <span className="ml-auto text-xs text-[var(--muted-foreground)]">
-              {state.finishedAt ? `Completed in ${elapsed}s` : `${elapsed}s elapsed`}
+              {state.finishedAt
+                ? `Completed in ${elapsed}s`
+                : `${elapsed}s elapsed`}
             </span>
           )}
         </div>
 
         {/* Status summary */}
-        {state.status !== "idle" && (
+        {state.status !== 'idle' && (
           <div className="grid gap-3 sm:grid-cols-4">
             <StatusCard
               label="Status"
               value={STEP_LABELS[state.status].label}
               variant={
-                state.status === "done"
-                  ? "success"
-                  : state.status === "error"
-                    ? "error"
+                state.status === 'done'
+                  ? 'success'
+                  : state.status === 'error'
+                    ? 'error'
                     : state.running
-                      ? "active"
-                      : "default"
+                      ? 'active'
+                      : 'default'
               }
             />
             <StatusCard
               label="Image Tag"
-              value={state.imageTag ?? "—"}
+              value={state.imageTag ?? '—'}
               variant="default"
             />
             <StatusCard
@@ -292,13 +307,13 @@ export default function RebuildPage() {
               value={
                 state.startedAt
                   ? new Date(state.startedAt).toLocaleTimeString()
-                  : "—"
+                  : '—'
               }
               variant="default"
             />
             <StatusCard
               label="Duration"
-              value={elapsed ? `${elapsed}s` : "—"}
+              value={elapsed ? `${elapsed}s` : '—'}
               variant="default"
             />
           </div>
@@ -332,38 +347,39 @@ export default function RebuildPage() {
           >
             {logs.length === 0 ? (
               <p className="text-sm text-zinc-600">
-                Click &quot;Start Rebuild&quot; to begin. Build output will appear here.
+                Click &quot;Start Rebuild&quot; to begin. Build output will
+                appear here.
               </p>
             ) : (
               <pre className="whitespace-pre-wrap font-mono text-xs leading-5 text-zinc-300">
                 {logs.map((line, i) => {
-                  const isStep = line.startsWith("==> Step:");
+                  const isStep = line.startsWith('==> Step:')
                   const isError =
-                    line.startsWith("==> ERROR") ||
-                    line.toLowerCase().includes("error");
+                    line.startsWith('==> ERROR') ||
+                    line.toLowerCase().includes('error')
                   const isSuccess =
-                    line.startsWith("==> Rebuild complete") ||
-                    line.includes("Ready at");
-                  const isCmd = line.startsWith("$ ");
+                    line.startsWith('==> Rebuild complete') ||
+                    line.includes('Ready at')
+                  const isCmd = line.startsWith('$ ')
 
                   return (
                     <div
                       key={i}
                       className={
                         isStep
-                          ? "font-bold text-[var(--primary)]"
+                          ? 'font-bold text-[var(--primary)]'
                           : isError
-                            ? "text-red-400"
+                            ? 'text-red-400'
                             : isSuccess
-                              ? "text-emerald-400 font-bold"
+                              ? 'text-emerald-400 font-bold'
                               : isCmd
-                                ? "text-yellow-400"
-                                : ""
+                                ? 'text-yellow-400'
+                                : ''
                       }
                     >
                       {line}
                     </div>
-                  );
+                  )
                 })}
               </pre>
             )}
@@ -371,7 +387,7 @@ export default function RebuildPage() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
 function StatusCard({
@@ -379,25 +395,23 @@ function StatusCard({
   value,
   variant,
 }: {
-  label: string;
-  value: string;
-  variant: "default" | "success" | "error" | "active";
+  label: string
+  value: string
+  variant: 'default' | 'success' | 'error' | 'active'
 }) {
   const borderColor =
-    variant === "success"
-      ? "border-emerald-500/30"
-      : variant === "error"
-        ? "border-red-500/30"
-        : variant === "active"
-          ? "border-[var(--primary)]/30"
-          : "border-[var(--border)]";
+    variant === 'success'
+      ? 'border-emerald-500/30'
+      : variant === 'error'
+        ? 'border-red-500/30'
+        : variant === 'active'
+          ? 'border-[var(--primary)]/30'
+          : 'border-[var(--border)]'
 
   return (
-    <div
-      className={`rounded-lg border ${borderColor} bg-[var(--card)] p-3`}
-    >
+    <div className={`rounded-lg border ${borderColor} bg-[var(--card)] p-3`}>
       <p className="text-[10px] text-[var(--muted-foreground)]">{label}</p>
       <p className="mt-0.5 text-sm font-medium truncate">{value}</p>
     </div>
-  );
+  )
 }
